@@ -351,10 +351,9 @@ let html = `
 
         <div class="hidden md:grid md:grid-cols-12 gap-3 font-semibold text-gray-700 border-b pb-3 mb-3">
             <div class="col-span-1">Item</div>
-            <div class="col-span-4">Description</div>
+            <div class="col-span-6">Description</div>
             <div class="col-span-2">Reference</div>
             <div class="col-span-3">Result</div>
-            <div class="col-span-2">Remarks</div>
         </div>
 `;
 
@@ -371,7 +370,7 @@ html += `
             <span class="font-bold">${item[0]}</span>
         </div>
 
-        <div class="md:col-span-4">
+        <div class="md:col-span-6">
             <div class="font-medium">${item[1]}</div>
         </div>
 
@@ -403,14 +402,6 @@ html += `
 
             </div>
 
-        </div>
-
-        <div class="md:col-span-2">
-            <textarea
-                placeholder="Remarks"
-                rows="2"
-                class="remarks-input w-full border rounded-lg px-2 py-2 resize-none">
-            </textarea>
         </div>
 
     </div>
