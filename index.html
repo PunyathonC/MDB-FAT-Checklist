@@ -215,13 +215,13 @@ const sections = [
         icon:"fa-building",
         critical:false,
         items:[
-            ["1.1","ขนาดตู้ (กว้าง x ยาว x สูง) ตามแบบที่อนุมัติ","ตามแบบ"],
+            ["1.1","ขนาดตู้ (กว้างxยาวxสูง)","ตามแบบที่อนุมัติ"],
             ["1.2","โครงสร้างตู้ทำจากเหล็กหนาไม่น้อยกว่า 3 มม.","Spec ข้อ 9.1"],
             ["1.3","ฝาตู้ทุกด้านเป็นชนิด Electrogalvanize และพ่นสี มีความหนา 2 มม.","Spec ข้อ 9.2"],
-            ["1.4","สีตู้ RAL9002 และความหนาสี ≥ 60 ไมครอน","Spec ข้อ 9.3"],
-            ["1.5","Mimic Bus Normal สีดำ / Emergency สีแดง หนา ≥ 3 มม. / กว้าง ≥ 10 มม.","Spec ข้อ 13"],
-            ["1.6","Nameplate ระบุ From / To และ Main-Branch CB","Spec ข้อ 13"],
-            ["1.7","ป้าย MEA Logo, QR Code และ Logo ผู้ผลิต","Spec ข้อ 13"]
+            ["1.4","- สีตู้ RAL 9002 หรือสีอื่นๆ<br>- ความหนาสี ≥ 60 ไมครอน","Spec ข้อ 9.3"],
+            ["1.5","Mimic bus<br>- Normal : สีดำ / Emergency : สีแดง<br>- หนา ≥ 3 มม. / กว้าง ≥ 10 มม.","Spec ข้อ 13"],
+            ["1.6","Nameplate<br>- ชื่อตู้ MDB<br>- ระบุว่าจ่ายไฟมาจากที่ไหน (From) หรือ จ่ายไฟไปที่ไหน (To)<br>- ระบุชื่อ CB Main และ Branch ทุกตัว","Spec ข้อ 13"],
+            ["1.7","ป้าย<br>- MEA logo (ด้านหน้าตู้)<br>- ป้ายพิกัดรายละเอียด QR code (ด้านในฝาตู้)<br>- Logo ผู้ผลิต (ไม่กำหนด)","Spec ข้อ 13"]
         ]
     },
     {
@@ -229,10 +229,10 @@ const sections = [
         icon:"fa-network-wired",
         critical:false,
         items:[
-            ["2.1","ขนาด Line และ Neutral Busbar ตามแบบ","Spec ข้อ 10.3"],
-            ["2.2","ขนาด Ground Busbar ตามพิกัด Main CB","Spec ข้อ 10"],
-            ["2.3","Bonding ระหว่าง Neutral และ Ground Busbar","ตามแบบ"],
-            ["2.4","สี Busbar L1/L2/L3/N/G ถูกต้อง","Spec ข้อ 10.7"]
+            ["2.1","ขนาด Line และ Neutral Busbar<br>- L1/L2/L3 ตามแบบ<br>- N = L1/L2/L3","Spec ข้อ 10.3<br>IEC 61439-1 (คำนวนตามบัสบาร์เปลือย)"],
+            ["2.2","ขนาด Ground Busbar<br>≥ 95 ตร.มม. ที่ Main CB ≤ 800 A<br>≥ 120 ตร.มม. ที่ Main CB > 800 A","Spec ข้อ 10"],
+            ["2.3","สาย Bonding ระหว่าง Neutral Busbar และ Ground Busbar (ถ้ามี)","ตามแบบ"],
+            ["2.4","สี Busbar<br>- L1/L2/L3 : น้ำตาล / ดำ / เทา<br>- N : ฟ้า<br>- G : เขียว","Spec ข้อ 10.7"]
         ]
     },
     {
@@ -240,9 +240,7 @@ const sections = [
         icon:"fa-bolt",
         critical:false,
         items:[
-            ["3.1","ตรวจสอบยี่ห้อ รุ่น Rating Pole Ics และ Icu ของ CB","ตามแบบ"],
-            ["3.2","ตรวจสอบการติดตั้งและแรงบิดขันแน่น","Manufacturer Standard"],
-            ["3.3","ตรวจสอบการตั้งค่า Protection","IEC 60947-2"]
+            ["3.1","ตรวจสอบ CB ตามแบบ<br>- ยี่ห้อ / รุ่น<br>- Rating CB (AT/AF)<br>- จำนวน Pole (1/3)<br>- Ics, Icu (kA)","ตามแบบ"]
         ]
     },
     {
@@ -250,32 +248,32 @@ const sections = [
         icon:"fa-plug",
         critical:false,
         items:[
-            ["4.1","สายควบคุมชนิด IEC08 (HVSF)","Spec ข้อ 11.1"],
-            ["4.2","ขนาดสาย Control / Current / Voltage Circuit 2.5 sq.mm.","Spec ข้อ 11.1"],
-            ["4.3","สาย Ground ประตู 10 sq.mm. แบบสายทองแดงถัก","Spec ข้อ 11.1"],
-            ["4.4","Wire Mark แบบปลอกสวมทั้งต้นทางและปลายทาง","Spec ข้อ 11.5"],
-            ["4.5","สีสายไฟถูกต้องตามประเภทวงจร","Spec ข้อ 10.6"]
+            ["4.1","สายควบคุมเป็นชนิด IEC 08 (HVSF)","Spec ข้อ 11.1"],
+            ["4.2","ขนาดสายควบคุม<br>- Current/Voltage/Control circuit 2.5 ตร.มม.","Spec ข้อ 11.1"],
+            ["4.3","สาย Ground บานประตู<br>- 10 ตร.มม.<br>- ใช้สายทองแดงถัก (ไม่ใช้สาย IEC01)","Spec ข้อ 11.1"],
+            ["4.4","Wire mark สายควบคุม<br>- เป็นชนิดปลอกสวม<br>- ระบุชื่ออุปกรณ์ต้นทางและปลายทาง (2 บรรทัด) ที่ปลายสายทั้ง 2 ด้าน","Spec ข้อ 11.5"],
+            ["4.5","สีของสายไฟฟ้า<br>- Voltage circuit : น้ำตาล/ดำ/เทา/ฟ้า<br>- Current circuit : แดง/เหลือง/น้ำเงิน<br>- Power supply circuit : น้ำตาล/ฟ้า<br>- Control circuit : เทา","Spec ข้อ 10.6"]
         ]
     },
     {
-        title:"Section 5 : อุปกรณ์เครื่องวัด (Current Transformer, Lamp, Digital Meter)",
+        title:"Section 5 : อุปกรณ์เครื่องวัด (Current transformer, Lamp, Digital meter)",
         icon:"fa-gauge-high",
         critical:false,
         items:[
-            ["5.1","Current Transformer Ratio / Class / Burden","ตามแบบ"],
-            ["5.2","Pilot Lamp L1/L2/L3 สีขาว","Spec ข้อ 12.2"],
-            ["5.3","Fuse Spare อย่างน้อย 10%","Spec ข้อ 12.3"]
+            ["5.1","Current Transformer<br>- Ratio xxx/1 หรือ xxx/5<br>- Class และ Burden","ตามแบบ"],
+            ["5.2","Pilot lamp<br>- L1/L2/L3 : สีขาว","Spec ข้อ 12.2"],
+            ["5.3","Fuse (ถ้ามี)<br>- จัดหา fuse (spare) 10% ของทั้งหมด","Spec ข้อ 12.3"]
         ]
     },
     {
-        title:"Section 6 : ทดสอบการทำงาน (Function Test)",
+        title:"Section 6 : ทดสอบการทำงาน (Function test)",
         icon:"fa-gears",
         critical:false,
         items:[
-            ["6.1","ทดสอบ Alarm, Status, Trip และ Interlock","FAT Procedure"],
-            ["6.2","ทดสอบ Meter V/I/Watt/Var/VA/PF","FAT Procedure"],
-            ["6.3","ทดสอบ Test Trip MCCB","FAT Procedure"],
-            ["6.4","ทดสอบ Trip Unit ของ ACB","FAT Procedure"]
+            ["6.1","ทดสอบการทำงานของวงจรควบคุม (Alarm, status, trip, interlock, …)",""],
+            ["6.2","ทดสอบการทำงานของ Meter<br>- ตรวจสอบ V/I/Watt/Var/VA/p.f.",""],
+            ["6.3","ทดสอบ test trip ของ MCCB",""],
+            ["6.4","ทดสอบ Trip unit ของ ACB",""]
         ]
     },
     {
@@ -283,10 +281,10 @@ const sections = [
         icon:"fa-triangle-exclamation",
         critical:true,
         items:[
-            ["7.1","Dielectric Test 2000VAC 1 นาที","IEC 61439-1"],
-            ["7.2","Insulation Resistance Test 1000VDC","IEC 61439-1"],
-            ["7.3","Ground Continuity Test ≤ 0.1 Ohm","IEC 60335-1"],
-            ["7.4","Contact Resistance Test","Manufacturer Standard"]
+            ["7.1","Dielectric test ของ Main circuit และ Control circuit ด้วยแรงดัน 2000VAC เป็นเวลา 1 นาที<br>- L1 เทียบกับ L2+L3+N+G<br>- L2 เทียบกับ L1+L3+N+G<br>- L3 เทียบกับ L1+L2+N+G<br><span class='text-mea-orange font-medium mt-1 inline-block'>*ค่าที่ยอมรับได้ : ไม่ Breakdown*</span>","IEC 61439-1"],
+            ["7.2","Insulation Resistance Test ก่อนและหลัง Dielectric test ด้วยแรงดัน 1000VDC เป็นเวลา 1 นาที<br>- L1 เทียบกับ L2+L3+N+G<br>- L2 เทียบกับ L1+L3+N+G<br>- L3 เทียบกับ L1+L2+N+G<br><span class='text-mea-orange font-medium mt-1 inline-block'>*ค่าที่ยอมรับได้ ≥ 1 MegaOhm*</span>","IEC 61439-1"],
+            ["7.3","Ground Continuity Test <br>- ระหว่าง ground bar และ terminal<br>- ระหว่างโครงและฝาตู้<br><span class='text-mea-orange font-medium mt-1 inline-block'>*ค่าที่ยอมรับได้ ≤ 0.1 Ohm*</span>","IEC 60335-1"],
+            ["7.4","ทดสอบ Contact resistance <br>- Main CB<br>- CB ทุกตัวที่ ≥ 800 A<br>- Main busbar (กรณีต่อตู้)<br><span class='text-mea-orange font-medium mt-1 inline-block'>*ค่าที่ยอมรับได้ : ตาม datasheet ของ CB*</span>",""]
         ]
     }
 ];
