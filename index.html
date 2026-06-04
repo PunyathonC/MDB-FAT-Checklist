@@ -1,1397 +1,699 @@
 <!DOCTYPE html>
-
 <html lang="th">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>MDB Factory Acceptance Test (FAT) Checklist</title>
 
-
-
     <script src="https://cdn.tailwindcss.com"></script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
-
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
     
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
 
-
-
     <style>
-
         *{ font-family: 'Prompt', sans-serif; box-sizing: border-box; }
-
         :root{ --mea-orange:#F37021; --mea-orange-dark:#D95D13; }
-
         body{ background:#f3f4f6; }
-
         .mea-bg{ background:var(--mea-orange); }
-
         .mea-text{ color:var(--mea-orange); }
-
         .section-header{ background:linear-gradient(135deg,var(--mea-orange),var(--mea-orange-dark)); }
-
         .critical-header{ background:linear-gradient(135deg,#ef4444,#f37021); }
-
         .radio-card{ transition:all .2s ease; }
-
         .pass-selected{ background:#dcfce7 !important; border-color:#22c55e !important; color:#15803d !important; font-weight:600; }
-
         .fail-selected{ background:#fee2e2 !important; border-color:#ef4444 !important; color:#b91c1c !important; font-weight:600; }
-
         
-
         .floating-buttons {
-
             position: fixed;
-
             bottom: 20px;
-
             right: 20px;
-
             display: flex;
-
             flex-direction: column;
-
             gap: 10px;
-
             z-index: 99999;
-
         }
-
-
 
         @media screen {
-
             .print-header, .print-footer, .print-only { display: none !important; }
-
         }
-
-
 
         @media print {
-
             @page { size: A4 portrait; margin: 10mm; }
-
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-
             body { background: white !important; }
-
             .no-print, .floating-buttons { display: none !important; }
-
             .print-only { display: block !important; }
-
             
-
             .shadow-lg, .shadow-sm, .shadow-md { box-shadow: none !important; }
-
             .bg-white { background-color: white !important; border: 1px solid #ddd !important; }
-
             
-
             table.main-table { width: 100% !important; border-collapse: collapse !important; border: none !important; }
-
             .print-header { display: table-header-group !important; }
-
             .print-footer { display: table-footer-group !important; }
-
             
-
             tr { page-break-inside: avoid !important; break-inside: avoid !important; }
-
             
-
             /* 💥 แก้ไขบั๊ก iOS: ใช้คำสั่งตัดหน้ากับ Block Element แทน Table Row */
-
             .print-page-break {
-
                 page-break-before: always !important;
-
                 break-before: page !important;
-
             }
-
             
-
             td { padding-left: 0 !important; padding-right: 0 !important; }
-
             .mea-bg, .section-header { background-color: #F37021 !important; color: white !important; }
-
             .critical-header { background-color: #ef4444 !important; color: white !important; }
-
             .bg-gray-50 { background-color: #f9fafb !important; }
-
             .bg-green-50 { background-color: #f0fdf4 !important; }
-
             .bg-red-50 { background-color: #fef2f2 !important; }
-
             .bg-blue-50 { background-color: #eff6ff !important; }
-
             .pass-selected { background-color: #dcfce7 !important; }
-
             .fail-selected { background-color: #fee2e2 !important; }
-
             input, textarea { background: transparent !important; border: none !important; padding: 0 !important; outline: none !important; resize: none !important; box-shadow: none !important; }
-
             input[type="text"] { border-bottom: 1px dotted #ccc !important; border-radius: 0 !important; }
-
             textarea { border-bottom: 1px dashed #ddd !important; border-radius: 0 !important; height: auto !important; overflow: visible !important; }
-
             body, p, span, div, label, input, textarea { font-size: 12px !important; line-height: 1.4 !important; }
-
             h1.text-2xl, h1.text-3xl { font-size: 16px !important; }
-
             h2.text-xl { font-size: 14px !important; margin-bottom: 8px !important; }
-
             .p-4 { padding: 12px !important; }
-
             .p-6 { padding: 16px !important; }
-
         }
-
     </style>
-
 </head>
-
 <body class="min-h-screen pb-10">
 
-
-
 <table class="main-table w-full max-w-5xl mx-auto">
-
     
-
     <thead class="print-header">
-
         <tr>
-
             <td class="pb-4 pt-4 px-4 md:px-0">
-
                 <div class="flex justify-between items-center text-[11px] font-bold text-gray-500 border-b border-gray-300 pb-2">
-
                     <span>วันที่ประเมิน: <span class="displayTimestamp text-gray-800"></span></span>
-
                     <span>ผู้ตรวจสอบ: <span class="displayInspectorName text-gray-800"></span></span>
-
                 </div>
-
             </td>
-
         </tr>
-
     </thead>
 
-
-
     <tbody>
-
         <tr>
-
             <td class="pb-6 pt-4 px-4 md:px-0">
-
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden relative z-10">
-
                     <div class="mea-bg text-white p-6">
-
                         <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-
                             <div>
-
                                 <h1 class="text-2xl md:text-3xl font-bold">Check list ตรวจสอบตู้ MDB ที่โรงงาน (FAT test)</h1>
-
                                 <p class="text-orange-100 mt-2">Main Distribution Board (MDB) Factory Test</p>
-
                             </div>
-
                             <div class="bg-white rounded-xl w-20 h-20 flex items-center justify-center shadow no-print">
-
                                 <i class="fa-solid fa-bolt text-4xl mea-text"></i>
-
                             </div>
-
                         </div>
-
                     </div>
-
                     <div class="p-6">
-
                         <div class="grid md:grid-cols-3 gap-6">
-
                             <div>
-
                                 <label class="text-sm text-gray-500 font-medium">Reference Spec</label>
-
                                 <input type="text" id="referenceSpec" placeholder="ระบุ Reference Spec" class="w-full mt-1 border rounded-lg px-3 py-2 bg-gray-50 focus:outline-none focus:ring-1 focus:ring-orange-500">
-
                             </div>
-
                             <div>
-
                                 <label class="text-sm text-mea-orange font-bold">ผู้ตรวจสอบ (Inspector)</label>
-
                                 <input type="text" id="inspectorName" placeholder="ระบุชื่อผู้ตรวจสอบ" class="w-full mt-1 border border-orange-300 rounded-lg px-3 py-2 bg-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-500">
-
                             </div>
-
                             <div>
-
                                 <label class="text-sm text-gray-500 font-medium">Project / MDB No.</label>
-
                                 <input type="text" id="projectNo" placeholder="Enter MDB Information" class="w-full mt-1 border rounded-lg px-3 py-2 bg-gray-50 focus:outline-none focus:ring-1 focus:ring-orange-500">
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </td>
-
         </tr>
-
     </tbody>
-
-
 
     <tbody id="checklistBody"></tbody>
 
-
-
     <tbody>
-
         <tr>
-
             <td class="pt-6 pb-4 px-4 md:px-0">
-
                 <div class="print-page-break bg-white rounded-2xl shadow-lg border border-gray-200 p-6 relative z-10">
-
                     <h2 class="text-xl font-bold mb-4 mea-text border-b pb-3">
-
                         <i class="fa-solid fa-clipboard-check mr-2"></i>
-
                         สรุปการตรวจสอบ (Summary Report)
-
                     </h2>
-
                     
-
                     <div id="summaryContent" class="p-4 bg-gray-50 rounded-xl border border-gray-200">
-
                         <p class="text-gray-500 text-center">กรุณาทำรายการตรวจสอบเพื่อดูสรุปผล</p>
-
                     </div>
-
                     
-
                     <div class="mt-8 pt-6 border-t border-gray-300 print-only">
-
                         <div class="flex justify-end items-end">
-
                             <div class="text-center w-64">
-
                                 <p class="text-gray-600 mb-6 text-xs font-bold">ลงชื่อผู้ตรวจสอบ (Inspector Signature)</p>
-
                                 <div class="border-b border-gray-400 pb-1 mb-2"></div>
-
                                 <p class="text-xs text-gray-700 font-bold">( <span class="displayInspectorName text-mea-orange px-2"></span> )</p>
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
-
             </td>
-
         </tr>
-
     </tbody>
 
-
-
     <tfoot class="print-footer">
-
-        <tr>
-
+        <tr class="hidden"> 
             <td class="pt-4 pb-4 px-4 md:px-0">
-
                 <div class="text-right text-[11px] font-bold text-gray-500 border-t border-gray-300 pt-2 mt-2">
-
                     ผู้ตรวจสอบ: <span class="displayInspectorName text-gray-800"></span>
-
                 </div>
-
             </td>
-
         </tr>
-
     </tfoot>
-
-
 
 </table>
 
-
-
 <div class="floating-buttons">
-
     <button onclick="exportToExcelJS()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-4 rounded-full shadow-lg font-bold flex items-center transition-all text-lg" id="exportBtn">
-
         <i class="fa-solid fa-file-excel mr-2 text-2xl"></i> ดาวน์โหลด Excel
-
     </button>
-
     <button onclick="printChecklist()" class="mea-bg hover:opacity-90 text-white px-6 py-3 rounded-full shadow-lg font-semibold flex items-center transition-all">
-
         <i class="fa-solid fa-print mr-2 text-xl"></i> พิมพ์ / PDF (Browser)
-
     </button>
-
     <button onclick="clearChecklist()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full shadow-lg font-semibold flex items-center transition-all">
-
         <i class="fa-solid fa-trash mr-2"></i> ล้างข้อมูล
-
     </button>
-
 </div>
 
-
-
 <script>
-
 const sections = [
-
     {
-
         title:"Section 1 : การตรวจสอบโครงสร้างและตู้ (Enclosure & Structure)",
-
         icon:"fa-building",
-
         critical:false,
-
         items:[
-
             ["1.1","ขนาดตู้ (กว้างxยาวxสูง)","ตามแบบที่อนุมัติ"],
-
             ["1.2","โครงสร้างตู้ทำจากเหล็กหนาไม่น้อยกว่า 3 มม.","Spec ข้อ 9.1"],
-
             ["1.3","ฝาตู้ทุกด้านเป็นชนิด Electrogalvanize และพ่นสี มีความหนา 2 มม.","Spec ข้อ 9.2"],
-
             ["1.4","สีตู้ RAL 9002 หรืออื่นๆ และความหนาสี ≥ 60 ไมครอน","Spec ข้อ 9.3"],
-
             ["1.5","Mimic bus (ตรวจสอบความถูกต้องของสีและขนาด)","Spec ข้อ 13"],
-
             ["1.6","Nameplate (ชื่อตู้, ระบุ From/To, ระบุชื่อ CB ทุกตัว)","Spec ข้อ 13"],
-
             ["1.7","ป้าย (MEA logo, QR code, Logo ผู้ผลิต)","Spec ข้อ 13"]
-
         ]
-
     },
-
     {
-
         title:"Section 2 : บัสบาร์และตัวนำ (Busbar & Conductors)",
-
         icon:"fa-network-wired",
-
         critical:false,
-
         items:[
-
             ["2.1","ตรวจสอบขนาด Line และ Neutral Busbar","Spec ข้อ 10.3\nIEC 61439-1"],
-
             ["2.2","ตรวจสอบขนาด Ground Busbar","Spec ข้อ 10"],
-
             ["2.3","สาย Bonding ระหว่าง Neutral Busbar และ Ground Busbar (ถ้ามี)","ตามแบบ"],
-
             ["2.4","ตรวจสอบความถูกต้องของสี Busbar แต่ละเฟส","Spec ข้อ 10.7"]
-
         ]
-
     },
-
     {
-
         title:"Section 3 : เซอร์กิตเบรกเกอร์ (Circuit Breaker)",
-
         icon:"fa-bolt",
-
         critical:false,
-
         items:[
-
             ["3.1","ตรวจสอบ CB ตามแบบ (ยี่ห้อ, รุ่น, Rating CB (AT/AF), จำนวน Pole (1/3), Ics, Icu)","ตามแบบ"]
-
         ]
-
     },
-
     {
-
         title:"Section 4 : สายไฟและการเดินสาย (Cable & Wiring)",
-
         icon:"fa-plug",
-
         critical:false,
-
         items:[
-
             ["4.1","สายควบคุมเป็นชนิด IEC 08 (HVSF)","Spec ข้อ 11.1"],
-
             ["4.2","ขนาดสายควบคุม 2.5 ตร.มม.","Spec ข้อ 11.1"],
-
             ["4.3","สาย Ground บานประตู (ใช้สายทองแดงถัก 10 ตร.มม.)","Spec ข้อ 11.1"],
-
             ["4.4","Wire mark สายควบคุม (ชนิดปลอกสวม ระบุต้นทางและปลายทาง)","Spec ข้อ 11.5"],
-
             ["4.5","ตรวจสอบความถูกต้องของสีสายไฟฟ้าแต่ละวงจร","Spec ข้อ 10.6"]
-
         ]
-
     },
-
     {
-
         title:"Section 5 : อุปกรณ์เครื่องวัด (Current transformer, Lamp, Digital meter)",
-
         icon:"fa-gauge-high",
-
         critical:false,
-
         items:[
-
             ["5.1","Current Transformer (ตรวจสอบ Ratio, Class, Burden)","ตามแบบ"],
-
             ["5.2","Pilot lamp L1/L2/L3 ใช้สีขาว","Spec ข้อ 12.2"],
-
             ["5.3","Fuse (ถ้ามี) จัดหาสำรอง 10% ของทั้งหมด","Spec ข้อ 12.3"]
-
         ]
-
     },
-
     {
-
         title:"Section 6 : ทดสอบการทำงาน (Function test)",
-
         icon:"fa-gears",
-
         critical:false,
-
         items:[
-
             ["6.1","ทดสอบการทำงานของวงจรควบคุม (Alarm, status, trip, interlock, …)",""],
-
             ["6.2","ทดสอบการทำงานของ Meter (V/I/Watt/Var/VA/p.f.)",""],
-
             ["6.3","ทดสอบ Test trip ของ MCCB",""],
-
             ["6.4","ทดสอบ Trip unit ของ ACB",""]
-
         ]
-
     },
-
     {
-
         title:"Section 7 : การทดสอบไฟฟ้า (Electrical Testing)",
-
         icon:"fa-triangle-exclamation",
-
         critical:true,
-
         items:[
-
             ["7.1","Dielectric test ด้วยแรงดัน 2000VAC เป็นเวลา 1 นาที (ไม่ Breakdown)","IEC 61439-1"],
-
             ["7.2","Insulation Resistance Test ด้วยแรงดัน 1000VDC 1 นาที (≥ 1 MegaOhm)","IEC 61439-1"],
-
             ["7.3","Ground Continuity Test (≤ 0.1 Ohm)","IEC 60335-1"],
-
             ["7.4","ทดสอบ Contact resistance (ตาม datasheet)",""]
-
         ]
-
     }
-
 ];
 
-
-
 const checklistBody = document.getElementById("checklistBody");
-
 let fullHtml = ""; 
 
-
-
 sections.forEach((section, sIndex)=>{
-
     fullHtml += `
-
     <tr>
-
         <td class="pb-3 pt-4 px-4 md:px-0">
-
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-
                 <div class="${section.critical ? 'critical-header' : 'section-header'} text-white p-4">
-
                     <div class="flex items-center justify-between">
-
                         <h2 class="font-bold text-lg flex items-center gap-3 m-0">
-
                             <div class="bg-white text-gray-700 w-8 h-8 rounded flex items-center justify-center shadow-sm">
-
                                 <i class="fa-solid ${section.icon} text-sm"></i>
-
                             </div>
-
                             ${section.title}
-
                         </h2>
-
                         ${section.critical ? '<span class="bg-white text-red-600 px-3 py-1 rounded-full text-xs font-bold">CRITICAL TEST</span>' : ''}
-
                     </div>
-
                 </div>
-
             </div>
-
         </td>
-
     </tr>`;
 
-
-
     section.items.forEach((item, i)=>{
-
         const radioName = `section${sIndex}_item${i}`;
-
         fullHtml += `
-
         <tr>
-
             <td class="pb-3 px-4 md:px-0">
-
                 <div class="check-item bg-white border border-gray-200 rounded-xl p-4 shadow-sm relative z-10">
-
                     <div class="grid md:grid-cols-12 gap-3 items-start">
-
                         <div class="md:col-span-1"><span class="font-bold text-lg">${item[0]}</span></div>
-
                         <div class="md:col-span-6"><div class="font-medium text-gray-800">${item[1].replace(/\n/g, '<br>')}</div></div>
-
                         <div class="md:col-span-2"><span class="text-sm text-gray-500">${item[2].replace(/\n/g, '<br>')}</span></div>
-
                         
-
                         <div class="md:col-span-3">
-
                             <div class="flex gap-2">
-
                                 <label class="radio-card pass-option border border-gray-300 rounded-lg px-3 py-2 cursor-pointer flex-1 text-center bg-gray-50 hover:bg-gray-100">
-
                                     <input type="radio" name="${radioName}" value="Pass" class="sr-only">
-
                                     <i class="fa-solid fa-circle-check"></i> ผ่าน
-
                                 </label>
-
                                 <label class="radio-card fail-option border border-gray-300 rounded-lg px-3 py-2 cursor-pointer flex-1 text-center bg-gray-50 hover:bg-gray-100">
-
                                     <input type="radio" name="${radioName}" value="Fail" class="sr-only">
-
                                     <i class="fa-solid fa-circle-xmark"></i> ไม่ผ่าน
-
                                 </label>
-
                             </div>
-
                         </div>
-
                     </div>
-
                     
-
                     <div class="remarks-container mt-3 pt-3 border-t border-gray-100">
-
                         <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">หมายเหตุ (Remarks)</label>
-
                         <textarea class="remarks-input w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 transition-all" 
-
                                   rows="1" placeholder=""></textarea>
-
                     </div>
-
                 </div>
-
             </td>
-
         </tr>`;
-
     });
-
 });
-
 checklistBody.innerHTML = fullHtml;
 
-
-
 document.addEventListener("change",(e)=>{
-
     if(e.target.type === "radio"){
-
         const group = document.querySelectorAll(`input[name="${e.target.name}"]`);
-
         group.forEach(radio=>{
-
             const label = radio.closest("label");
-
             label.classList.remove("pass-selected", "fail-selected");
-
         });
-
         const selectedLabel = e.target.closest("label");
-
         if(e.target.value === "Pass"){
-
             selectedLabel.classList.add("pass-selected");
-
         }else{
-
             selectedLabel.classList.add("fail-selected");
-
         }
-
     }
-
 });
-
-
 
 document.getElementById("inspectorName").addEventListener("input", function(e) {
-
     const val = e.target.value.trim() || ".........................................";
-
     document.querySelectorAll(".displayInspectorName").forEach(el => el.innerText = val);
-
 });
 
-
-
 // =====================================
-
 // ฟังก์ชันสร้างไฟล์ Excel ด้วย ExcelJS (พร้อมหน้าสรุป)
-
 // =====================================
-
 async function exportToExcelJS() {
-
     const btn = document.getElementById("exportBtn");
-
     const originalText = btn.innerHTML;
-
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2 text-2xl"></i> กำลังสร้างไฟล์...';
-
     btn.disabled = true;
 
-
-
     try {
-
         const refSpec = document.getElementById("referenceSpec").value || "-";
-
         const projNo = document.getElementById("projectNo").value || "-";
-
         const inspector = document.getElementById("inspectorName").value || "-";
-
         const now = new Date();
-
         const dateStr = now.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
 
-
-
         const workbook = new ExcelJS.Workbook();
-
         const sheet = workbook.addWorksheet('FAT_Checklist');
 
-
-
         // ตั้งค่าความกว้างคอลัมน์
-
         sheet.columns = [
-
-            { width: 8 },   // A: ข้อ
-
+            { width: 8 },  // A: ข้อ
             { width: 55 },  // B: รายละเอียด
-
             { width: 25 },  // C: อ้างอิง
-
             { width: 15 },  // D: ผลการประเมิน
-
             { width: 45 }   // E: หมายเหตุ
-
         ];
 
-
-
         // 1. หัวตารางใหญ่
-
         sheet.mergeCells('A1:E1');
-
         const titleCell = sheet.getCell('A1');
-
         titleCell.value = 'MDB Factory Acceptance Test (FAT) Checklist';
-
         titleCell.font = { name: 'Arial', size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
-
         titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF37021' } };
-
         titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
-
         sheet.getRow(1).height = 35;
 
-
-
         // 2. ข้อมูลโครงการ
-
         sheet.getCell('A3').value = 'Reference Spec:';
-
         sheet.getCell('A3').font = { bold: true };
-
         sheet.getCell('B3').value = refSpec;
-
         
-
         sheet.getCell('D3').value = 'วันที่ตรวจ:';
-
         sheet.getCell('D3').font = { bold: true };
-
         sheet.getCell('D3').alignment = { horizontal: 'right' };
-
         sheet.getCell('E3').value = dateStr;
 
-
-
         sheet.getCell('A4').value = 'Project No:';
-
         sheet.getCell('A4').font = { bold: true };
-
         sheet.getCell('B4').value = projNo;
 
-
-
         sheet.getCell('D4').value = 'ผู้ตรวจสอบ:';
-
         sheet.getCell('D4').font = { bold: true };
-
         sheet.getCell('D4').alignment = { horizontal: 'right' };
-
         sheet.getCell('E4').value = inspector;
 
-
-
         sheet.getRow(3).height = 20;
-
         sheet.getRow(4).height = 20;
 
-
-
         // 3. หัวตารางย่อย
-
         const headerRow = sheet.addRow(['ข้อ', 'รายการตรวจสอบ', 'มาตรฐานอ้างอิง', 'ผลการตรวจสอบ', 'หมายเหตุ']);
-
         headerRow.height = 25;
-
         headerRow.eachCell((cell) => {
-
             cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-
             cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4B5563' } }; 
-
             cell.alignment = { vertical: 'middle', horizontal: 'center' };
-
             cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-
         });
-
-
 
         // ตัวแปรสำหรับเก็บค่า Summary
-
         let passCount = 0;
-
         let failList = [];
-
         let pendingCount = 0;
 
-
-
         // 4. วนลูปสร้างข้อมูล
-
         let remarkInputs = document.querySelectorAll(".remarks-input");
-
         let inputIndex = 0;
 
-
-
         sections.forEach((section, sIndex) => {
-
             const secRow = sheet.addRow([section.title]);
-
             sheet.mergeCells(`A${secRow.number}:E${secRow.number}`);
-
             const secCell = sheet.getCell(`A${secRow.number}`);
-
             secCell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-
             secCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: section.critical ? 'FFEF4444' : 'FFF37021' } };
-
             secCell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
-
             secCell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-
             secRow.height = 25;
 
-
-
             section.items.forEach((item, i) => {
-
                 const radioName = `section${sIndex}_item${i}`;
-
                 const radioEl = document.querySelector(`input[name="${radioName}"]:checked`);
-
                 let resultText = "-";
-
                 let resultColor = 'FF000000';
-
                 
-
                 const remarkText = remarkInputs[inputIndex].value.trim() || "";
-
                 
-
                 if (radioEl) {
-
                     if (radioEl.value === "Pass") {
-
                         resultText = "ผ่าน";
-
                         resultColor = 'FF16A34A'; 
-
                         passCount++;
-
                     } else {
-
                         resultText = "ไม่ผ่าน";
-
                         resultColor = 'FFDC2626'; 
-
                         failList.push({ title: `ข้อ ${item[0]} ${item[1].replace(/\n/g, ' ')}`, remark: remarkText || "ไม่ได้ระบุหมายเหตุ" });
-
                     }
-
                 } else {
-
                     pendingCount++;
-
                 }
-
                 
-
                 const row = sheet.addRow([ item[0], item[1], item[2], resultText, remarkText ]);
-
                 
-
                 row.eachCell((cell, colNum) => {
-
                     cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-
                     cell.alignment = { vertical: 'top', wrapText: true };
-
                     
-
                     if (colNum === 1 || colNum === 3 || colNum === 4) {
-
                         cell.alignment = { ...cell.alignment, horizontal: 'center' };
-
                     }
-
                     if (colNum === 1) cell.font = { bold: true };
-
                     
-
                     if (colNum === 4 && resultText !== "-") {
-
                         cell.font = { color: { argb: resultColor }, bold: true };
-
                     }
-
                 });
 
-
-
                 inputIndex++;
-
             });
-
         });
 
-
-
         // 💥 5. เพิ่มการคำนวณและแสดงผลหน้า Summary ลงใน Excel
-
         sheet.addRow([]); // เว้นบรรทัด
-
         
-
         const sumHeaderRow = sheet.addRow(['สรุปการตรวจสอบ (Summary Report)']);
-
         sheet.mergeCells(`A${sumHeaderRow.number}:E${sumHeaderRow.number}`);
-
         sumHeaderRow.getCell(1).font = { size: 14, bold: true, color: { argb: 'FFFFFFFF' } };
-
         sumHeaderRow.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF37021' } };
-
         sumHeaderRow.getCell(1).alignment = { vertical: 'middle', horizontal: 'center' };
-
         sumHeaderRow.height = 30;
-
-
 
         const totalItems = sections.reduce((acc, sec) => acc + sec.items.length, 0);
 
-
-
         if (pendingCount === totalItems) {
-
             sheet.addRow(['กรุณาทำรายการตรวจสอบเพื่อดูสรุปผล']);
-
         } else if (failList.length === 0 && pendingCount === 0) {
-
             const r = sheet.addRow(['✓ ผ่านเกณฑ์ทั้งหมด (All Passed) - การตรวจสอบสมบูรณ์แบบ ไม่มีข้อบกพร่อง']);
-
             sheet.mergeCells(`A${r.number}:E${r.number}`);
-
             r.getCell(1).font = { bold: true, color: { argb: 'FF15803D' } }; 
-
         } else {
-
             if (failList.length > 0) {
-
                 const r = sheet.addRow([`✗ พบรายการ ไม่ผ่าน จำนวน ${failList.length} ข้อ`]);
-
                 sheet.mergeCells(`A${r.number}:E${r.number}`);
-
                 r.getCell(1).font = { bold: true, color: { argb: 'FFDC2626' } }; 
-
                 
-
                 failList.forEach(fail => {
-
                     const failRow = sheet.addRow([fail.title, '', '', '', `หมายเหตุ: ${fail.remark}`]);
-
                     sheet.mergeCells(`A${failRow.number}:D${failRow.number}`);
-
                     failRow.getCell(1).font = { color: { argb: 'FFDC2626' } };
-
                     failRow.getCell(5).alignment = { wrapText: true, vertical: 'top' };
-
                 });
-
             } else {
-
                 const r = sheet.addRow([`ℹ ผ่านเกณฑ์แล้ว ${passCount} ข้อ (ยังไม่พบข้อบกพร่อง)`]);
-
                 sheet.mergeCells(`A${r.number}:E${r.number}`);
-
                 r.getCell(1).font = { bold: true, color: { argb: 'FF1D4ED8' } }; 
-
             }
-
             
-
             if (pendingCount > 0) {
-
                 const r = sheet.addRow([`* ยังมีรายการที่รอการตรวจสอบอีก ${pendingCount} ข้อ`]);
-
                 sheet.mergeCells(`A${r.number}:E${r.number}`);
-
                 r.getCell(1).font = { bold: true, color: { argb: 'FFEA580C' } }; 
-
             }
-
         }
-
-
 
         // ลายเซ็นต์ใน Excel
-
         sheet.addRow([]);
-
         sheet.addRow([]);
-
         const sigRow1 = sheet.addRow(['', '', '', 'ลงชื่อผู้ตรวจสอบ ..............................................................']);
-
         const sigRow2 = sheet.addRow(['', '', '', `( ${inspector} )`]);
-
         sheet.mergeCells(`D${sigRow1.number}:E${sigRow1.number}`);
-
         sheet.mergeCells(`D${sigRow2.number}:E${sigRow2.number}`);
-
         sigRow1.getCell(4).alignment = { horizontal: 'right' };
-
         sigRow2.getCell(4).alignment = { horizontal: 'center' };
 
-
-
         // 6. บันทึกเป็นไฟล์ .xlsx
-
         const buffer = await workbook.xlsx.writeBuffer();
-
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
         
-
         const fileName = `FAT_MDB_Checklist_${projNo || 'Report'}.xlsx`;
-
         const file = new File([blob], fileName, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-
-
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
-
             await navigator.share({
-
                 files: [file],
-
                 title: 'FAT Checklist Report',
-
                 text: `เอกสารสรุป FAT Checklist โครงการ ${projNo}`
-
             });
-
         } else {
-
             const url = URL.createObjectURL(blob);
-
             const a = document.createElement('a');
-
             a.href = url;
-
             a.download = fileName;
-
             document.body.appendChild(a);
-
             a.click();
-
             document.body.removeChild(a);
-
             URL.revokeObjectURL(url);
-
         }
-
-
 
     } catch (error) {
-
         console.error(error);
-
         alert("เกิดข้อผิดพลาดในการสร้างไฟล์ Excel");
-
     } finally {
-
         btn.innerHTML = originalText;
-
         btn.disabled = false;
-
     }
-
 }
 
-
-
 // =====================================
-
 // สั่งพิมพ์
-
 // =====================================
-
 function printChecklist(){
-
     document.querySelectorAll(".remarks-input").forEach(textarea=>{
-
         textarea.style.height = "auto";
-
         textarea.style.height = textarea.scrollHeight + "px";
-
     });
-
     
-
     const inspectorName = document.getElementById("inspectorName").value.trim() || ".........................................";
-
     document.querySelectorAll(".displayInspectorName").forEach(el => el.innerText = inspectorName);
-
     
-
     const now = new Date();
-
     const formattedDate = now.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
-
     const formattedTime = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-
     const timeStr = `${formattedDate} เวลา ${formattedTime} น.`;
-
     document.querySelectorAll(".displayTimestamp").forEach(el => el.innerText = timeStr);
-
     
-
     setTimeout(() => {
-
         window.print();
-
     }, 300);
-
 }
-
-
 
 function clearChecklist(){
-
     if(confirm("ต้องการล้างข้อมูลทั้งหมดหรือไม่?")){
-
         localStorage.removeItem("mdb_fat_checklist");
-
         location.reload();
-
     }
-
 }
-
-
 
 function escapeHTML(str) {
-
     return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
-
 }
-
-
 
 function updateSummary() {
-
     const items = document.querySelectorAll('.check-item');
-
     let passCount = 0;
-
     let failList = [];
-
     let pendingCount = 0;
 
-
-
     items.forEach((itemDom) => {
-
         const itemNumber = itemDom.querySelector('.font-bold').innerText;
-
         const itemDesc = itemDom.querySelector('.font-medium').innerHTML.split('<br>')[0]; 
-
         const checkedRadio = itemDom.querySelector('input[type="radio"]:checked');
-
         const remarkRaw = itemDom.querySelector('.remarks-input').value.trim();
-
         const remarkSafe = remarkRaw ? escapeHTML(remarkRaw) : '<span class="text-gray-400 italic">ไม่ได้ระบุหมายเหตุ</span>';
 
-
-
         if (!checkedRadio) pendingCount++;
-
         else if (checkedRadio.value === 'Pass') passCount++;
-
         else if (checkedRadio.value === 'Fail') failList.push({ title: `${itemNumber} ${itemDesc}`, remark: remarkSafe });
-
     });
-
-
 
     const summaryContainer = document.getElementById('summaryContent');
-
     if (items.length === 0) return;
-
     if (pendingCount === items.length) {
-
         summaryContainer.innerHTML = `<p class="text-gray-500 text-center">กรุณาทำรายการตรวจสอบเพื่อดูสรุปผล</p>`;
-
         return;
-
     }
-
-
 
     let html = '';
-
     if (failList.length === 0 && pendingCount === 0) {
-
         html = `<div class="bg-green-50 border border-green-300 text-green-700 px-4 py-4 rounded-lg flex items-center shadow-sm relative z-10"><i class="fa-solid fa-circle-check text-3xl mr-4"></i><div><p class="font-bold text-lg">ผ่านเกณฑ์ทั้งหมด (All Passed)</p><p class="text-sm mt-1">การตรวจสอบสมบูรณ์แบบ ไม่มีข้อบกพร่อง</p></div></div>`;
-
     } else {
-
         if (failList.length > 0) {
-
             html += `<div class="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center shadow-sm relative z-10"><i class="fa-solid fa-circle-xmark text-2xl mr-3"></i><p class="font-bold text-lg">พบรายการ ไม่ผ่าน จำนวน ${failList.length} ข้อ</p></div><div class="space-y-3">`;
-
             failList.forEach(fail => {
-
                 html += `<div class="bg-white border border-red-200 p-4 rounded-lg shadow-sm"><p class="font-bold text-red-600"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ข้อ ${fail.title}</p><div class="text-sm text-gray-700 mt-2 bg-gray-50 p-3 rounded border border-gray-100"><span class="font-semibold">หมายเหตุ:</span> ${fail.remark}</div></div>`;
-
             });
-
             html += `</div>`;
-
         } else {
-
              html += `<div class="bg-blue-50 border border-blue-300 text-blue-700 px-4 py-3 rounded-lg mb-3 flex items-center shadow-sm relative z-10"><i class="fa-solid fa-info-circle text-2xl mr-3"></i><p class="font-bold text-lg">ผ่านเกณฑ์แล้ว ${passCount} ข้อ (ยังไม่พบข้อบกพร่อง)</p></div>`;
-
         }
-
         if (pendingCount > 0) html += `<p class="text-sm text-orange-600 mt-4 font-medium"><i class="fa-solid fa-clock mr-1"></i> * ยังมีรายการที่รอการตรวจสอบอีก ${pendingCount} ข้อ</p>`;
-
     }
-
     summaryContainer.innerHTML = html;
-
 }
-
-
 
 function saveData(){
-
     const data = {
-
         referenceSpec : document.getElementById("referenceSpec")?.value || "",
-
         projectNo : document.getElementById("projectNo")?.value || "",
-
         inspector : document.getElementById("inspectorName")?.value || "",
-
         remarks : [],
-
         radios : {}
-
     };
 
-
-
     document.querySelectorAll(".remarks-input").forEach(input=>{ data.remarks.push(input.value); });
-
     document.querySelectorAll('input[type="radio"]:checked').forEach(radio=>{ data.radios[radio.name] = radio.value; });
 
-
-
     localStorage.setItem("mdb_fat_checklist", JSON.stringify(data));
-
     updateSummary(); 
-
 }
 
-
-
 document.addEventListener("input", saveData);
-
 document.addEventListener("change", saveData);
-
 document.addEventListener("input",(e)=>{
-
     if(e.target.classList.contains("remarks-input")){
-
         e.target.style.height = "auto";
-
         e.target.style.height = e.target.scrollHeight + "px";
-
     }
-
 });
-
-
 
 window.addEventListener("load",()=>{
-
     const saved = localStorage.getItem("mdb_fat_checklist");
-
     if(!saved) return;
-
     const data = JSON.parse(saved);
-
     
-
     if(document.getElementById("referenceSpec")) document.getElementById("referenceSpec").value = data.referenceSpec || "";
-
     if(document.getElementById("projectNo")) document.getElementById("projectNo").value = data.projectNo || "";
-
     if(document.getElementById("inspectorName")) {
-
         const inspector = data.inspector || "";
-
         document.getElementById("inspectorName").value = inspector;
-
         document.querySelectorAll(".displayInspectorName").forEach(el => el.innerText = inspector || ".........................................");
-
     }
 
-
-
     document.querySelectorAll(".remarks-input").forEach((input, index)=>{
-
         if(data.remarks && data.remarks[index] !== undefined) input.value = data.remarks[index];
-
         input.style.height = "auto";
-
         input.style.height = input.scrollHeight + "px";
-
     });
-
-
 
     Object.keys(data.radios || {}).forEach(name=>{
-
         const radio = document.querySelector(`input[name="${name}"][value="${data.radios[name]}"]`);
-
         if(radio){
-
             radio.checked = true;
-
             const label = radio.closest("label");
-
             if(radio.value === "Pass") label.classList.add("pass-selected");
-
             else label.classList.add("fail-selected");
-
         }
-
     });
-
     updateSummary();
-
 });
-
 </script>
 
-
-
 </body>
-
 </html>
