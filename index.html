@@ -67,12 +67,13 @@
             textarea{ border: 1px solid #ddd !important; height:auto !important; overflow:visible !important; white-space:pre-wrap !important; }
             .remarks-container { border-top: 1px dashed #ccc !important; margin-top: 4px !important; padding-top: 4px !important; }
             
-            /* เปิดการแสดงผล THEAD ให้พิมพ์ซ้ำทุกหน้าบน Safari */
+            /* เปิดการแสดงผล TFOOT และ THEAD ให้พิมพ์ซ้ำทุกหน้าบน Safari */
             .print-header-repeat { display: table-header-group !important; }
+            .print-footer-repeat { display: table-footer-group !important; }
         }
         
         @media screen {
-            .print-header-repeat { display: none !important; }
+            .print-header-repeat, .print-footer-repeat { display: none !important; }
         }
 
         /* โครงสร้างตารางครอบสำหรับพิมพ์ */
@@ -87,13 +88,26 @@
     <thead class="print-header-repeat">
         <tr>
             <td class="pb-3">
-                <div class="flex justify-between items-center text-xs font-bold text-gray-700 border-b-2 border-gray-300 pb-2">
-                    <span><i class="fa-regular fa-clock mr-1"></i> วันที่ประเมิน: <span class="displayTimestamp font-black text-black ml-1"></span></span>
-                    <span>ผู้ตรวจสอบ: <span class="displayInspectorName text-mea-orange ml-1"></span></span>
+                <div class="flex justify-end items-center text-xs font-bold text-gray-700 border-b-2 border-gray-300 pb-2">
+                    <span>ผู้ตรวจสอบ (Inspector): <span class="displayInspectorName text-mea-orange ml-1"></span></span>
                 </div>
             </td>
         </tr>
     </thead>
+
+    <tfoot class="print-footer-repeat">
+        <tr>
+            <td class="pt-4">
+                <div class="flex justify-end items-end border-t-2 border-gray-300 pt-4 mt-2">
+                    <div class="text-center w-64">
+                        <p class="text-gray-600 mb-6 text-xs font-bold">ลงชื่อผู้ตรวจสอบ (Inspector Signature)</p>
+                        <div class="border-b border-gray-400 pb-1 mb-2"></div>
+                        <p class="text-xs text-gray-700 font-bold">( <span class="displayInspectorName text-mea-orange px-2"></span> )</p>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </tfoot>
 
     <tbody>
         <tr>
@@ -161,7 +175,7 @@
 </button>
 
 <script>
-// ข้อมูล 7 หมวด
+// ข้อมูล 7 หมวด 
 const sections = [
     {
         title:"Section 1 : การตรวจสอบโครงสร้างและตู้ (Enclosure & Structure)",
@@ -320,7 +334,7 @@ document.addEventListener("change",(e)=>{
     }
 });
 
-// Sync ชื่อผู้ตรวจไปยัง Header
+// Sync ชื่อผู้ตรวจไปยัง Header/Footer (Real-time)
 document.getElementById("inspectorName").addEventListener("input", function(e) {
     const val = e.target.value.trim() || ".........................................";
     document.querySelectorAll(".displayInspectorName").forEach(el => el.innerText = val);
@@ -334,12 +348,6 @@ function printChecklist(){
     
     const inspectorName = document.getElementById("inspectorName").value.trim() || ".........................................";
     document.querySelectorAll(".displayInspectorName").forEach(el => el.innerText = inspectorName);
-    
-    const now = new Date();
-    const formattedDate = now.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
-    const formattedTime = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
-    const timeStr = `${formattedDate} เวลา ${formattedTime} น.`;
-    document.querySelectorAll(".displayTimestamp").forEach(el => el.innerText = timeStr);
     
     setTimeout(() => {
         window.print();
