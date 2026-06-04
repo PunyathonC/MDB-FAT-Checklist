@@ -157,8 +157,8 @@
                     <label class="text-sm text-gray-500">Reference Spec</label>
                     <input type="text"
                            id="referenceSpec"
-                           value="BQD-3042"
-                           class="w-full mt-1 border rounded-lg px-3 py-2 bg-gray-50">
+                           placeholder="ระบุ Reference Spec"
+                           class="w-full mt-1 border rounded-lg px-3 py-2">
                 </div>
                 <div>
                     <label class="text-sm text-gray-500">Revision Date</label>
@@ -179,32 +179,27 @@
 
     <div id="checklistContainer"></div>
 
-    <div class="bg-white rounded-2xl shadow-lg p-6 mt-8 print-page-break">
-        <h2 class="text-xl font-bold mb-4 mea-text">
-            <i class="fa-solid fa-clipboard-list mr-2"></i>
-            สรุปผลการประเมิน (Summary Report)
+    <div class="bg-white rounded-2xl shadow-lg p-6 mt-8 print-page-break break-inside-avoid">
+        
+        <h2 class="text-xl font-bold mb-6 mea-text border-b pb-3">
+            <i class="fa-solid fa-clipboard-check mr-2"></i>
+            สรุปการตรวจสอบ
         </h2>
+
+        <div class="mb-6">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                ผู้ตรวจสอบ (Inspector Name)
+            </label>
+            <input type="text"
+                   id="inspectorName"
+                   class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                   placeholder="ระบุชื่อผู้ตรวจสอบ">
+        </div>
+
         <div id="summaryContent" class="p-4 bg-gray-50 rounded-xl border">
             <p class="text-gray-500 text-center">กรุณาทำรายการตรวจสอบเพื่อดูสรุปผล</p>
         </div>
-    </div>
-
-    <div class="bg-white rounded-2xl shadow-lg p-6 mt-8">
-        <h2 class="text-xl font-bold mb-4 mea-text">
-            <i class="fa-solid fa-user-check mr-2"></i>
-            สรุปการตรวจสอบ
-        </h2>
-        <div class="grid md:grid-cols-1 gap-4">
-            <div>
-                <label class="block text-sm text-gray-600 mb-1">
-                    ผู้ตรวจสอบ (Inspector Name)
-                </label>
-                <input type="text"
-                       id="inspectorName"
-                       class="w-full border rounded-lg px-3 py-2"
-                       placeholder="ชื่อผู้ตรวจสอบ">
-            </div>
-        </div>
+        
     </div>
 
 </div>
@@ -542,7 +537,7 @@ window.addEventListener("load",()=>{
 
     const data = JSON.parse(saved);
     
-    if(document.getElementById("referenceSpec")) document.getElementById("referenceSpec").value = data.referenceSpec || "BQD-3042";
+    if(document.getElementById("referenceSpec")) document.getElementById("referenceSpec").value = data.referenceSpec || "";
     if(document.getElementById("revisionDate")) document.getElementById("revisionDate").value = data.revisionDate || "";
     if(document.getElementById("projectNo")) document.getElementById("projectNo").value = data.projectNo || "";
     if(document.getElementById("inspectorName")) document.getElementById("inspectorName").value = data.inspector || "";
