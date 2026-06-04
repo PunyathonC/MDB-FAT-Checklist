@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 
     <style>
         *{ font-family: 'Prompt', sans-serif; box-sizing: border-box; }
@@ -53,7 +53,6 @@
             
             tr { page-break-inside: avoid !important; break-inside: avoid !important; }
             
-            /* 💥 แก้ไขบั๊ก iOS: ใช้คำสั่งตัดหน้ากับ Block Element แทน Table Row */
             .print-page-break {
                 page-break-before: always !important;
                 break-before: page !important;
@@ -346,9 +345,14 @@ document.getElementById("inspectorName").addEventListener("input", function(e) {
 });
 
 // =====================================
-// ฟังก์ชันสร้างไฟล์ Excel ด้วย ExcelJS (พร้อมหน้าสรุป)
+// ฟังก์ชันสร้างไฟล์ Excel ด้วย ExcelJS (อัปเดตระบบดาวน์โหลดให้เสถียร)
 // =====================================
 async function exportToExcelJS() {
+    if (typeof ExcelJS === 'undefined') {
+        alert("กำลังโหลดระบบ Excel กรุณารอสักครู่แล้วลองกดใหม่อีกครั้ง");
+        return;
+    }
+
     const btn = document.getElementById("exportBtn");
     const originalText = btn.innerHTML;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2 text-2xl"></i> กำลังสร้างไฟล์...';
@@ -475,7 +479,7 @@ async function exportToExcelJS() {
             });
         });
 
-        // 💥 5. เพิ่มการคำนวณและแสดงผลหน้า Summary ลงใน Excel
+        // 5. เพิ่มการคำนวณและแสดงผลหน้า Summary ลงใน Excel
         sheet.addRow([]); // เว้นบรรทัด
         
         const sumHeaderRow = sheet.addRow(['สรุปการตรวจสอบ (Summary Report)']);
@@ -528,33 +532,32 @@ async function exportToExcelJS() {
         sigRow1.getCell(4).alignment = { horizontal: 'right' };
         sigRow2.getCell(4).alignment = { horizontal: 'center' };
 
-        // 6. บันทึกเป็นไฟล์ .xlsx
+        // 6. สร้างและดาวน์โหลดไฟล์ (แก้ไขให้ดาวน์โหลดตรงๆ ไม่ใช้ Share API)
         const buffer = await workbook.xlsx.writeBuffer();
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         
-        const fileName = `FAT_MDB_Checklist_${projNo || 'Report'}.xlsx`;
-        const file = new File([blob], fileName, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        let fileProjName = projNo && projNo !== "-" ? projNo : 'Report';
+        fileProjName = fileProjName.replace(/[/\\?%*:|"<>]/g, '-'); // ป้องกันตัวอักษรที่ห้ามใช้เป็นชื่อไฟล์
+        const fileName = `FAT_MDB_Checklist_${fileProjName}.xlsx`;
 
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({
-                files: [file],
-                title: 'FAT Checklist Report',
-                text: `เอกสารสรุป FAT Checklist โครงการ ${projNo}`
-            });
-        } else {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
+        // บังคับดาวน์โหลดผ่าน a tag โดยตรง
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        
+        // ล้างหน่วยความจำหลังจากดาวน์โหลด
+        setTimeout(() => {
             document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
+            window.URL.revokeObjectURL(url);
+        }, 100);
 
     } catch (error) {
-        console.error(error);
-        alert("เกิดข้อผิดพลาดในการสร้างไฟล์ Excel");
+        console.error("Export Error:", error);
+        alert(`เกิดข้อผิดพลาดในการสร้างไฟล์ Excel: ${error.message || "Unknown error"}`);
     } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
