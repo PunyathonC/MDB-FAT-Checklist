@@ -22,8 +22,6 @@
         .fail-selected{ background:#fee2e2 !important; border-color:#ef4444 !important; color:#b91c1c !important; font-weight:600; }
         .floating-print{ position:fixed; bottom:20px; right:20px; z-index:999; }
         
-        .print-footer { display: none; }
-
         @page{ size:A4 portrait; margin:10mm; }
 
         @media print {
@@ -31,9 +29,13 @@
             .floating-print, .floating-clear{ display:none !important; }
             .shadow-md, .shadow-lg{ box-shadow:none !important; }
             
-            /* ---- ปรับปรุงใหม่: ย่อขนาด เล็กลง และไหลต่อกัน ---- */
-            
-            /* 1. ยกเลิกการตัดขึ้นหน้าใหม่ของแต่ละ Section ให้ไหลต่อเนื่องกันประหยัดกระดาษ */
+            /* บังคับให้ส่วน Header ด้านบนเป็น 4 คอลัมน์ตอนสั่งพิมพ์ */
+            .print-header-grid {
+                display: grid !important;
+                grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+                gap: 12px !important;
+            }
+
             .section-card {
                 overflow: visible !important; 
                 page-break-before: auto !important; 
@@ -42,7 +44,6 @@
                 border: 1px solid #ddd !important;
             }
             
-            /* 2. ลดขนาดตัวอักษรและช่องไฟทั้งหมด */
             body, p, span, div, label, input, textarea { 
                 font-size: 11px !important; 
                 line-height: 1.4 !important; 
@@ -50,17 +51,13 @@
             h1.text-2xl, h1.text-3xl { font-size: 16px !important; }
             h2.text-xl { font-size: 13px !important; padding: 6px !important; margin-bottom: 6px !important; }
             
-            /* 3. ลด Padding/Margin ให้กระชับขึ้นสุดๆ */
             .p-4, .p-6 { padding: 10px !important; }
             .mb-6 { margin-bottom: 10px !important; }
             .check-item { padding: 6px 10px !important; margin-bottom: 4px !important; border: 1px solid #eee !important;}
             .gap-4 { gap: 8px !important; }
             
-            /* 4. ซ่อนไอคอนสายฟ้าบน Header เพื่อประหยัดพื้นที่กระดาษ */
             .w-24.h-24 { display: none !important; }
             
-            /* ---------------------------------------------------- */
-
             .print-page-break { page-break-before: always !important; break-before: page !important; }
             .check-item { break-inside:avoid; page-break-inside:avoid; }
             
@@ -69,17 +66,6 @@
             textarea{ border: 1px solid #ddd !important; height:auto !important; overflow:visible !important; white-space:pre-wrap !important; }
             
             .remarks-container { border-top: 1px dashed #ccc !important; margin-top: 4px !important; padding-top: 4px !important; }
-            
-            .print-footer {
-                display: block !important;
-                position: fixed;
-                bottom: 15px;
-                right: 20px;
-                font-size: 12px;
-                font-weight: 600;
-                color: #333;
-                background: white;
-            }
         }
     </style>
 </head>
@@ -105,7 +91,7 @@
         </div>
 
         <div class="p-6">
-            <div class="grid md:grid-cols-4 gap-4">
+            <div class="grid md:grid-cols-4 gap-4 print-header-grid">
                 <div>
                     <label class="text-sm text-gray-500">Reference Spec</label>
                     <input type="text" id="referenceSpec" placeholder="ระบุ Reference Spec" class="w-full mt-1 border rounded-lg px-3 py-2">
@@ -115,12 +101,12 @@
                     <input type="date" id="revisionDate" class="w-full mt-1 border rounded-lg px-3 py-2">
                 </div>
                 <div>
-                    <label class="text-sm text-gray-500">Project / MDB No.</label>
-                    <input type="text" id="projectNo" placeholder="Enter MDB Information" class="w-full mt-1 border rounded-lg px-3 py-2">
-                </div>
-                <div>
                     <label class="text-sm text-mea-orange font-bold">ผู้ตรวจสอบ (Inspector)</label>
                     <input type="text" id="inspectorName" placeholder="ระบุชื่อผู้ตรวจสอบ" class="w-full mt-1 border border-orange-300 rounded-lg px-3 py-2 bg-orange-50 focus:outline-none focus:ring-1 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label class="text-sm text-gray-500">Project / MDB No.</label>
+                    <input type="text" id="projectNo" placeholder="Enter MDB Information" class="w-full mt-1 border rounded-lg px-3 py-2">
                 </div>
             </div>
         </div>
@@ -140,10 +126,6 @@
 
 </div>
 
-<div id="printFooter" class="print-footer">
-    ผู้ตรวจสอบ (Inspector): <span id="displayInspectorName" class="text-mea-orange">...................................................</span>
-</div>
-
 <button id="printBtn" onclick="printChecklist()" class="floating-print mea-bg hover:opacity-90 text-white px-6 py-4 rounded-full shadow-lg font-semibold text-lg">
     <i class="fa-solid fa-print mr-2"></i>
     Print / Save as PDF
@@ -155,7 +137,6 @@
 </button>
 
 <script>
-// --- อัปเดตข้อมูลโครงสร้าง ยุบข้อ 3 รวมกับข้อ 2 แล้วขยับตัวเลข ---
 const sections = [
     {
         title:"Section 1 : การตรวจสอบโครงสร้างและตู้ (Enclosure & Structure)",
@@ -180,7 +161,7 @@ const sections = [
             ["2.2","ตรวจสอบขนาด Ground Busbar","Spec ข้อ 10"],
             ["2.3","สาย Bonding ระหว่าง Neutral Busbar และ Ground Busbar (ถ้ามี)","ตามแบบ"],
             ["2.4","ตรวจสอบความถูกต้องของสี Busbar แต่ละเฟส","Spec ข้อ 10.7"],
-            ["2.5","ตรวจสอบ CB ตามแบบ (ยี่ห้อ, รุ่น, Rating, Pole, Ics, Icu)","ตามแบบ"] // ย้ายข้อเบรกเกอร์มาใส่ตรงนี้
+            ["2.5","ตรวจสอบ CB ตามแบบ (ยี่ห้อ, รุ่น, Rating, Pole, Ics, Icu)","ตามแบบ"]
         ]
     },
     {
@@ -312,9 +293,6 @@ function printChecklist(){
         textarea.style.height = "auto";
         textarea.style.height = textarea.scrollHeight + "px";
     });
-    
-    const inspectorName = document.getElementById("inspectorName").value.trim();
-    document.getElementById("displayInspectorName").innerText = inspectorName || "...................................................";
     
     window.print();
 }
