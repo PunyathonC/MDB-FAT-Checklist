@@ -278,11 +278,13 @@ const checklistBody = document.getElementById("checklistBody");
 let fullHtml = ""; 
 
 sections.forEach((section, sIndex)=>{
-    // บั๊ก iOS/Browser Fix: ใส่ คลาส print-page-break ที่ตัวการ์ด Div เพื่อสั่งตัดหน้าสำหรับ Section 2 เป็นต้นไป
+    // 💥 ปรับเงื่อนไขตัดหน้าจอ: บังคับขึ้นหน้าใหม่ทุกข้อ ยกเว้นข้อ 3 (sIndex !== 2) เพื่อให้อยู่หน้าเดียวกับข้อ 2
+    const shouldPageBreak = sIndex > 0 && sIndex !== 2;
+    
     fullHtml += `
     <tr>
         <td class="pb-3 pt-4 px-4 md:px-0">
-            <div class="${sIndex > 0 ? 'print-page-break' : ''} bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="${shouldPageBreak ? 'print-page-break' : ''} bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="${section.critical ? 'critical-header' : 'section-header'} text-white p-4">
                     <div class="flex items-center justify-between">
                         <h2 class="font-bold text-lg flex items-center gap-3 m-0">
