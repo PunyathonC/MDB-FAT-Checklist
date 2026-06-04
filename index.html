@@ -138,9 +138,12 @@
                 <div class="print-page-break bg-white rounded-2xl shadow-lg border border-gray-200 p-6 relative z-10">
                     <h2 class="text-xl font-bold mb-4 mea-text border-b pb-3">
                         <i class="fa-solid fa-clipboard-check mr-2"></i>
-                        สรุปการตรวจสอบ (Summary Report)
+                        สรุปการตรวจสอบ (Summary)
                     </h2>
-                    
+                    <div class="mb-4 text-sm text-gray-600">
+                        <p><strong>Project / MDB No. :</strong> <span id="displayProjectNo" class="text-gray-900 font-medium">ยังไม่ได้ระบุโครงการ</span></p>
+                        <p><strong>เมื่อ :</strong> <span id="displayTimestamp" class="text-gray-900 font-medium">-</span></p>
+                    </div>
                     <div id="summaryContent" class="p-4 bg-gray-50 rounded-xl border border-gray-200">
                         <p class="text-gray-500 text-center">กรุณาทำรายการตรวจสอบเพื่อดูสรุปผล</p>
                     </div>
@@ -592,10 +595,17 @@ function clearChecklist(){
 }
 
 function escapeHTML(str) {
+    
     return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
 }
 
 function updateSummary() {
+    const projectNo = document.getElementById("projectNo").value || "ยังไม่ได้ระบุโครงการ";
+    document.getElementById("displayProjectNo").innerText = projectNo;
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById("displayTimestamp").innerText = `${dateStr} เวลา ${timeStr} น.`;
     const items = document.querySelectorAll('.check-item');
     let passCount = 0;
     let failList = [];
@@ -691,8 +701,10 @@ window.addEventListener("load",()=>{
             else label.classList.add("fail-selected");
         }
     });
+    document.getElementById("projectNo").addEventListener("input", function() {
     updateSummary();
 });
+
 </script>
 
 </body>
