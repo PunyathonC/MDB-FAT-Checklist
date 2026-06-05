@@ -91,7 +91,6 @@
                 break-after: avoid !important;
             }
             
-            /* บังคับขึ้นหน้าใหม่ 100% สำหรับทุก Section และ Summary */
             .safe-page-break {
                 display: block !important;
                 page-break-before: always !important;
@@ -154,6 +153,7 @@
 </head>
 <body class="min-h-screen pb-10">
 
+<!-- ตารางแรกสำหรับหัวกระดาษและฟอร์มผู้ตรวจ -->
 <table class="main-table w-full max-w-5xl mx-auto">
     <thead class="print-header">
         <tr>
@@ -202,10 +202,13 @@
     </tbody>
 </table>
 
+<!-- คอนเทนเนอร์หลักที่จะให้ JavaScript ทำการวาดแต่ละ Section เป็นตารางใหม่แยกกัน -->
 <div id="checklistContainer"></div>
 
+<!-- ตัวตัดหน้ากระดาษก่อนขึ้นหน้า Summary -->
 <div class="safe-page-break print-only"></div>
 
+<!-- ตารางใหม่สำหรับ Summary Report -->
 <table class="main-table w-full max-w-5xl mx-auto mt-6 md:mt-0">
     <thead class="print-header">
         <tr>
@@ -416,6 +419,7 @@ sections.forEach((section, sIndex) => {
                             <textarea class="remarks-input w-full border border-gray-200 rounded-lg px-3 py-1.5 md:py-2 text-xs md:text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 transition-all" 
                                       rows="1" placeholder=""></textarea>
                             
+                            <!-- ระบบอัปโหลดรูปภาพ -->
                             <div class="photo-upload-container mt-2">
                                 <input type="file" accept="image/*" capture="environment" class="hidden photo-input" id="photo_${radioName}">
                                 <button type="button" class="text-[10px] md:text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 py-1.5 px-3 rounded flex items-center gap-2 border border-gray-300 transition-colors" onclick="document.getElementById('photo_${radioName}').click()">
@@ -430,6 +434,7 @@ sections.forEach((section, sIndex) => {
                             </div>
                         </div>
 
+                        <!-- แสดงภาพ/Remark ในหน้า Print -->
                         <div class="print-layout remarks-container print-remarks-box hidden">
                             <span class="text-[10px] font-bold text-gray-500 block mb-0.5">หมายเหตุ: <span class="print-remark-text font-normal text-gray-700"></span></span>
                         </div>
@@ -779,10 +784,10 @@ async function exportToExcelJS() {
             window.URL.revokeObjectURL(url);
         }, 100);
 
-    } catch (error) {
-        console.error("Export Error:", error);
-        alert(`เกิดข้อผิดพลาดในการสร้างไฟล์ Excel: ${error.message || "Unknown error"}`);
-    } catch {
+    } catch (err) {
+        console.error("Export Error:", err);
+        alert(`เกิดข้อผิดพลาดในการสร้างไฟล์ Excel: ${err.message || "Unknown error"}`);
+    } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
     }
@@ -814,7 +819,6 @@ function updateSummary() {
     let failList = [];
     let pendingCount = 0;
 
-    // แก้ไขระบบการดึงข้อมูลจากโครงสร้างอาเรย์โดยตรงเพื่อปิดช่องโหว่ DOM-based XSS ตัวเก่า
     sections.forEach((section, sIndex) => {
         section.items.forEach((item, i) => {
             const radioName = `section${sIndex}_item${i}`;
