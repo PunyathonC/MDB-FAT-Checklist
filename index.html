@@ -25,21 +25,12 @@
         
         .floating-buttons {
             position: fixed;
-            bottom: 16px;
-            right: 16px;
+            bottom: 20px;
+            right: 20px;
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
-            gap: 8px;
+            gap: 10px;
             z-index: 99999;
-        }
-        
-        @media (min-width: 768px) {
-            .floating-buttons {
-                bottom: 20px;
-                right: 20px;
-                gap: 12px;
-            }
         }
 
         /* ซ่อน Print Layout ในหน้าจอปกติ */
@@ -109,7 +100,8 @@
             .print-radio-box.print-fail { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #b91c1c !important; font-weight: bold; }
             .print-radio-box.inactive { opacity: 0.5; }
             
-            .print-photo-box img { max-height: 250px !important; width: auto !important; max-width: 100% !important; margin-top: 8px !important; object-fit: contain; }
+            /* ปรับขนาดรูปในหน้า Print ให้ใหญ่ขึ้น */
+            .print-photo-box img { max-height: 300px !important; margin-top: 8px !important; width: auto !important; max-width: 100% !important;}
         }
     </style>
 </head>
@@ -205,14 +197,14 @@
 </table>
 
 <div class="floating-buttons">
-    <button onclick="exportToExcelJS()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 md:px-6 md:py-4 rounded-full shadow-lg font-bold flex items-center transition-all text-sm md:text-lg" id="exportBtn">
-        <i class="fa-solid fa-file-excel mr-2 md:mr-3 text-lg md:text-2xl"></i> ดาวน์โหลด Excel
+    <button onclick="exportToExcelJS()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-4 rounded-full shadow-lg font-bold flex items-center transition-all text-lg" id="exportBtn">
+        <i class="fa-solid fa-file-excel mr-2 text-2xl"></i> ดาวน์โหลด Excel
     </button>
-    <button onclick="printChecklist()" class="mea-bg hover:opacity-90 text-white px-4 py-2 md:px-6 md:py-3 rounded-full shadow-lg font-semibold flex items-center transition-all text-sm md:text-base">
-        <i class="fa-solid fa-print mr-2 text-base md:text-xl"></i> พิมพ์ / PDF
+    <button onclick="printChecklist()" class="mea-bg hover:opacity-90 text-white px-6 py-3 rounded-full shadow-lg font-semibold flex items-center transition-all">
+        <i class="fa-solid fa-print mr-2 text-xl"></i> พิมพ์ / PDF (Browser)
     </button>
-    <button onclick="clearChecklist()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-full shadow-lg font-semibold flex items-center transition-all text-sm md:text-base">
-        <i class="fa-solid fa-trash mr-2 text-base"></i> ล้างข้อมูล
+    <button onclick="clearChecklist()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full shadow-lg font-semibold flex items-center transition-all">
+        <i class="fa-solid fa-trash mr-2"></i> ล้างข้อมูล
     </button>
 </div>
 
@@ -359,13 +351,15 @@ sections.forEach((section, sIndex)=>{
                         <textarea class="remarks-input w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 transition-all" 
                                   rows="1" placeholder=""></textarea>
                         
+                        <!-- ระบบอัปโหลดรูปภาพ -->
                         <div class="photo-upload-container screen-layout mt-2">
                             <input type="file" accept="image/*" capture="environment" class="hidden photo-input" id="photo_${radioName}">
-                            <button type="button" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 py-1.5 px-3 rounded flex items-center gap-2 border border-gray-300 transition-colors" onclick="document.getElementById('photo_${radioName}').click()">
+                            <button type="button" class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded flex items-center gap-2 border border-gray-300 transition-colors" onclick="document.getElementById('photo_${radioName}').click()">
                                 <i class="fa-solid fa-camera"></i> แนบรูปถ่ายอ้างอิง
                             </button>
-                            <div class="mt-3 preview-box hidden relative inline-block max-w-full">
-                                <img src="" class="h-32 md:h-40 w-auto max-w-full rounded border border-gray-300 object-contain preview-img bg-gray-50">
+                            <div class="mt-3 preview-box hidden relative inline-block">
+                                <!-- เปลี่ยนขนาดตรงนี้ h-40 จะได้ขนาด 160px -->
+                                <img src="" class="h-40 w-auto rounded border border-gray-300 object-contain preview-img bg-gray-50">
                                 <button type="button" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md hover:bg-red-600 remove-photo-btn" data-target="photo_${radioName}">
                                     <i class="fa-solid fa-times"></i>
                                 </button>
@@ -374,6 +368,7 @@ sections.forEach((section, sIndex)=>{
 
                     </div>
 
+                    <!-- แสดงภาพในหน้า Print -->
                     <div class="print-layout mt-3 hidden print-photo-box">
                         <span class="text-[11px] font-bold text-gray-600 block mb-1">ภาพประกอบ:</span>
                         <img src="" class="print-img rounded border border-gray-300">
@@ -398,9 +393,9 @@ document.addEventListener("change", async (e) => {
             const img = new Image();
             img.src = event.target.result;
             img.onload = () => {
-                // บีบอัดรูปด้วย Canvas
+                // ขยาย Max Width เป็น 800px ให้ภาพชัดขึ้น
                 const canvas = document.createElement("canvas");
-                const MAX_WIDTH = 800; // กำหนดความกว้างสูงสุด 800px
+                const MAX_WIDTH = 800; 
                 let scale = MAX_WIDTH / img.width;
                 if(scale > 1) scale = 1; 
                 
@@ -514,6 +509,7 @@ function updateCurrentTime() {
     document.querySelectorAll(".displayTimestamp").forEach(el => el.innerText = timeStr);
 }
 
+// อัปเดต ExcelJS เล็กน้อย
 async function exportToExcelJS() {
     if (typeof ExcelJS === 'undefined') {
         alert("กำลังโหลดระบบ Excel กรุณารอสักครู่แล้วลองกดใหม่อีกครั้ง");
@@ -522,7 +518,7 @@ async function exportToExcelJS() {
 
     const btn = document.getElementById("exportBtn");
     const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2 md:mr-3 text-lg md:text-2xl"></i> กำลังสร้างไฟล์...';
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2 text-2xl"></i> กำลังสร้างไฟล์...';
     btn.disabled = true;
 
     try {
@@ -752,10 +748,10 @@ function updateSummary() {
         const remarkRaw = itemDom.querySelector('.remarks-input').value.trim();
         const remarkSafe = remarkRaw ? escapeHTML(remarkRaw) : '<span class="text-gray-400 italic">ไม่ได้ระบุหมายเหตุ</span>';
 
-        // ปรับให้รูปในหน้าสรุปผลใหญ่ขึ้น คงสัดส่วนเดิม
+        // ปรับให้รูปในหน้าสรุปผลใหญ่ขึ้น (จาก h-20 เป็น max-h-40)
         const photoInputId = `photo_${itemDom.getAttribute('data-radioname')}`;
         const photoPreview = itemDom.querySelector(`#${photoInputId}`).closest('.photo-upload-container').querySelector('.preview-img').src;
-        const photoHtml = (photoPreview && photoPreview.startsWith('data:image')) ? `<div class="mt-4"><span class="text-sm font-bold text-gray-600 mb-2 block">ภาพประกอบ:</span><img src="${photoPreview}" class="max-h-40 w-auto max-w-full rounded border border-gray-300 object-contain bg-white"></div>` : '';
+        const photoHtml = (photoPreview && photoPreview.startsWith('data:image')) ? `<div class="mt-4"><span class="text-sm font-bold text-gray-600 mb-2 block">ภาพประกอบ:</span><img src="${photoPreview}" class="max-h-40 rounded border border-gray-300"></div>` : '';
 
         if (!checkedRadio) pendingCount++;
         else if (checkedRadio.value === 'Pass') passCount++;
