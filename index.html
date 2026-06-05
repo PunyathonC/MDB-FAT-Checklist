@@ -100,8 +100,7 @@
             .print-radio-box.print-fail { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #b91c1c !important; font-weight: bold; }
             .print-radio-box.inactive { opacity: 0.5; }
             
-            /* ปรับขนาดรูปในหน้า Print ให้ใหญ่ขึ้น */
-            .print-photo-box img { max-height: 300px !important; margin-top: 8px !important; width: auto !important; max-width: 100% !important;}
+            .print-photo-box img { max-height: 150px !important; margin-top: 4px !important; }
         }
     </style>
 </head>
@@ -354,13 +353,12 @@ sections.forEach((section, sIndex)=>{
                         <!-- ระบบอัปโหลดรูปภาพ -->
                         <div class="photo-upload-container screen-layout mt-2">
                             <input type="file" accept="image/*" capture="environment" class="hidden photo-input" id="photo_${radioName}">
-                            <button type="button" class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded flex items-center gap-2 border border-gray-300 transition-colors" onclick="document.getElementById('photo_${radioName}').click()">
+                            <button type="button" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 py-1.5 px-3 rounded flex items-center gap-2 border border-gray-300 transition-colors" onclick="document.getElementById('photo_${radioName}').click()">
                                 <i class="fa-solid fa-camera"></i> แนบรูปถ่ายอ้างอิง
                             </button>
-                            <div class="mt-3 preview-box hidden relative inline-block">
-                                <!-- เปลี่ยนขนาดตรงนี้ h-40 จะได้ขนาด 160px -->
-                                <img src="" class="h-40 w-auto rounded border border-gray-300 object-contain preview-img bg-gray-50">
-                                <button type="button" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md hover:bg-red-600 remove-photo-btn" data-target="photo_${radioName}">
+                            <div class="mt-2 preview-box hidden relative inline-block">
+                                <img src="" class="h-20 w-auto rounded border border-gray-300 object-cover preview-img">
+                                <button type="button" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] hover:bg-red-600 remove-photo-btn" data-target="photo_${radioName}">
                                     <i class="fa-solid fa-times"></i>
                                 </button>
                             </div>
@@ -369,8 +367,8 @@ sections.forEach((section, sIndex)=>{
                     </div>
 
                     <!-- แสดงภาพในหน้า Print -->
-                    <div class="print-layout mt-3 hidden print-photo-box">
-                        <span class="text-[11px] font-bold text-gray-600 block mb-1">ภาพประกอบ:</span>
+                    <div class="print-layout mt-2 hidden print-photo-box">
+                        <span class="text-[10px] font-bold text-gray-500 block mb-1">ภาพประกอบ:</span>
                         <img src="" class="print-img rounded border border-gray-300">
                     </div>
 
@@ -393,11 +391,11 @@ document.addEventListener("change", async (e) => {
             const img = new Image();
             img.src = event.target.result;
             img.onload = () => {
-                // ขยาย Max Width เป็น 800px ให้ภาพชัดขึ้น
+                // บีบอัดรูปด้วย Canvas
                 const canvas = document.createElement("canvas");
-                const MAX_WIDTH = 800; 
+                const MAX_WIDTH = 600; // กำหนดความกว้างสูงสุด 600px
                 let scale = MAX_WIDTH / img.width;
-                if(scale > 1) scale = 1; 
+                if(scale > 1) scale = 1; // ไม่ขยายภาพถ้าเล็กกว่า 600px อยู่แล้ว
                 
                 canvas.width = img.width * scale;
                 canvas.height = img.height * scale;
@@ -509,7 +507,7 @@ function updateCurrentTime() {
     document.querySelectorAll(".displayTimestamp").forEach(el => el.innerText = timeStr);
 }
 
-// อัปเดต ExcelJS เล็กน้อย
+// อัปเดต ExcelJS เล็กน้อย (Excel ทำรูปซับซ้อน จึงยังส่งออกแค่ Text ให้ทำงานได้ปกติ)
 async function exportToExcelJS() {
     if (typeof ExcelJS === 'undefined') {
         alert("กำลังโหลดระบบ Excel กรุณารอสักครู่แล้วลองกดใหม่อีกครั้ง");
@@ -596,6 +594,7 @@ async function exportToExcelJS() {
                 let resultText = "-";
                 let resultColor = 'FF000000';
                 
+                // เช็คว่ามีรูปถ่ายไหมเพื่อใส่ไปใน Remark ของ Excel
                 const photoInput = document.getElementById(`photo_${radioName}`);
                 const hasPhoto = photoInput && photoInput.closest('.photo-upload-container').querySelector('.preview-img').src.startsWith('data:image');
                 let remarkText = remarkInputs[inputIndex].value.trim() || "";
@@ -748,10 +747,10 @@ function updateSummary() {
         const remarkRaw = itemDom.querySelector('.remarks-input').value.trim();
         const remarkSafe = remarkRaw ? escapeHTML(remarkRaw) : '<span class="text-gray-400 italic">ไม่ได้ระบุหมายเหตุ</span>';
 
-        // ปรับให้รูปในหน้าสรุปผลใหญ่ขึ้น (จาก h-20 เป็น max-h-40)
+        // ดึงรูปภาพมาแสดงในหน้าสรุปผล
         const photoInputId = `photo_${itemDom.getAttribute('data-radioname')}`;
         const photoPreview = itemDom.querySelector(`#${photoInputId}`).closest('.photo-upload-container').querySelector('.preview-img').src;
-        const photoHtml = (photoPreview && photoPreview.startsWith('data:image')) ? `<div class="mt-4"><span class="text-sm font-bold text-gray-600 mb-2 block">ภาพประกอบ:</span><img src="${photoPreview}" class="max-h-40 rounded border border-gray-300"></div>` : '';
+        const photoHtml = (photoPreview && photoPreview.startsWith('data:image')) ? `<div class="mt-3"><span class="text-xs font-bold text-gray-500 mb-1 block">ภาพประกอบ:</span><img src="${photoPreview}" class="h-20 rounded border border-gray-300"></div>` : '';
 
         if (!checkedRadio) pendingCount++;
         else if (checkedRadio.value === 'Pass') passCount++;
@@ -772,7 +771,7 @@ function updateSummary() {
         if (failList.length > 0) {
             html += `<div class="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center shadow-sm"><i class="fa-solid fa-circle-xmark text-2xl mr-3"></i><p class="font-bold text-lg">พบรายการ ไม่ผ่าน จำนวน ${failList.length} ข้อ</p></div><div class="space-y-3">`;
             failList.forEach(fail => {
-                html += `<div class="bg-white border border-red-200 p-4 rounded-lg shadow-sm"><p class="font-bold text-red-600"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ข้อ ${fail.title}</p><div class="text-sm text-gray-700 mt-2 bg-gray-50 p-4 rounded border border-gray-100"><span class="font-semibold text-base">หมายเหตุ:</span> ${fail.remark} ${fail.photoHtml}</div></div>`;
+                html += `<div class="bg-white border border-red-200 p-4 rounded-lg shadow-sm"><p class="font-bold text-red-600"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ข้อ ${fail.title}</p><div class="text-sm text-gray-700 mt-2 bg-gray-50 p-3 rounded border border-gray-100"><span class="font-semibold">หมายเหตุ:</span> ${fail.remark} ${fail.photoHtml}</div></div>`;
             });
             html += `</div>`;
         } else {
