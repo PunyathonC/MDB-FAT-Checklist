@@ -33,11 +33,16 @@
             z-index: 99999;
         }
 
+        /* ซ่อน Print Layout ในหน้าจอปกติ */
         @media screen {
-            .print-header, .print-footer, .print-only { display: none !important; }
+            .print-header, .print-footer, .print-only, .print-layout { display: none !important; }
         }
 
+        /* ซ่อน Screen Layout ในหน้าจอ Print */
         @media print {
+            .screen-layout { display: none !important; }
+            .print-layout { display: flex !important; }
+            
             @page { size: A4 portrait; margin: 10mm; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             body { background: white !important; }
@@ -51,13 +56,9 @@
             .print-header { display: table-header-group !important; }
             .print-footer { display: table-footer-group !important; }
             
-            /* iOS Fix: ห้ามใช้ page-break-inside: avoid กับ tr ตรงๆ เพราะจะทำให้หน้าสรุปหายบน WebKit */
+            /* iOS Fix */
             .check-item { page-break-inside: avoid !important; break-inside: avoid !important; }
-            
-            .print-page-break {
-                page-break-before: always !important;
-                break-before: page !important;
-            }
+            .print-page-break { page-break-before: always !important; break-before: page !important; }
             
             td { padding-left: 0 !important; padding-right: 0 !important; }
             .mea-bg, .section-header { background-color: #F37021 !important; color: white !important; }
@@ -76,6 +77,40 @@
             h2.text-xl { font-size: 14px !important; margin-bottom: 8px !important; }
             .p-4 { padding: 12px !important; }
             .p-6 { padding: 16px !important; }
+
+            /* ปรับแต่ง Layout ใหม่ตอน Print ให้ตรงตามภาพเป๊ะๆ */
+            .check-item {
+                border: none !important;
+                border-bottom: 1px solid #e5e7eb !important;
+                border-radius: 0 !important;
+                padding: 12px 0 !important;
+                box-shadow: none !important;
+            }
+            
+            .grid { display: flex !important; width: 100%; justify-content: space-between; align-items: center; }
+            .md\:col-span-1 { width: 8%; flex-shrink: 0; }
+            .md\:col-span-6 { width: 52%; flex-grow: 1; padding-right: 10px; }
+            .md\:col-span-2 { width: 20%; flex-shrink: 0; font-size: 10px !important;}
+            .md\:col-span-3 { width: 20%; flex-shrink: 0; display: flex; justify-content: flex-end;}
+            
+            .remarks-container {
+                margin-top: 8px !important;
+                padding-top: 8px !important;
+                border-top: 1px dashed #e5e7eb !important;
+                width: 100%;
+            }
+            .remarks-container textarea {
+                color: #4b5563;
+                font-style: italic;
+            }
+            
+            .section-header, .critical-header {
+                padding: 8px 12px !important;
+                border-radius: 8px !important;
+                margin-top: 16px !important;
+            }
+            .section-header h2, .critical-header h2 { font-size: 13px !important; }
+            .bg-white.text-gray-700.w-8.h-8 { width: 20px !important; height: 20px !important; }
 
             /* ปรับแต่งปุ่ม ผ่าน/ไม่ผ่าน ในหน้าจอ Print */
             .print-radio-container {
@@ -110,54 +145,6 @@
             }
             .print-radio-box.inactive {
                 opacity: 0.5; /* ทำให้ตัวที่ไม่ได้เลือกดูจางลง */
-            }
-        }
-
-        /* ซ่อน Print Layout ในหน้าจอปกติ */
-        @media screen {
-            .print-layout { display: none; }
-        }
-        /* ซ่อน Screen Layout ในหน้าจอ Print */
-        @media print {
-            .screen-layout { display: none; }
-            .print-layout { display: flex; }
-            
-            .check-item {
-                border: none !important;
-                border-bottom: 1px solid #e5e7eb !important;
-                border-radius: 0 !important;
-                padding: 12px 0 !important;
-                box-shadow: none !important;
-            }
-            
-            .grid { display: flex !important; width: 100%; justify-content: space-between; align-items: center; }
-            .md\:col-span-1 { width: 8%; flex-shrink: 0; }
-            .md\:col-span-6 { width: 52%; flex-grow: 1; padding-right: 10px; }
-            .md\:col-span-2 { width: 20%; flex-shrink: 0; font-size: 10px !important;}
-            .md\:col-span-3 { width: 20%; flex-shrink: 0; display: flex; justify-content: flex-end;}
-            
-            .remarks-container {
-                margin-top: 8px !important;
-                padding-top: 8px !important;
-                border-top: 1px dashed #e5e7eb !important;
-                width: 100%;
-            }
-            .remarks-container textarea {
-                color: #4b5563;
-                font-style: italic;
-            }
-            
-            /* ปรับแต่งหัวข้อ Section ใน Print */
-            .section-header, .critical-header {
-                padding: 8px 12px !important;
-                border-radius: 8px !important;
-                margin-top: 16px !important;
-            }
-            .section-header h2, .critical-header h2 {
-                font-size: 13px !important;
-            }
-            .bg-white.text-gray-700.w-8.h-8 {
-                width: 20px !important; height: 20px !important;
             }
         }
     </style>
@@ -224,7 +211,7 @@
                         สรุปการตรวจสอบ (Summary Report)
                     </h2>
                     
-                    <div class="flex flex-col md:flex-row justify-between md:items-center gap-2 mb-4 bg-orange-50/50 p-3 rounded-lg border border-orange-100 screen-layout" style="display: flex;">
+                    <div class="flex flex-col md:flex-row justify-between md:items-center gap-2 mb-4 bg-orange-50/50 p-3 rounded-lg border border-orange-100 screen-layout">
                         <div class="text-sm">
                             <span class="font-semibold text-gray-600">Project / MDB No:</span> 
                             <span class="displaySummaryProject text-mea-orange font-bold text-base ml-1">-</span>
@@ -418,7 +405,7 @@ sections.forEach((section, sIndex)=>{
                     </div>
                     
                     <div class="remarks-container mt-3 pt-3 border-t border-gray-100">
-                        <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider screen-layout" style="display:block;">หมายเหตุ (Remarks)</label>
+                        <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider screen-layout">หมายเหตุ (Remarks)</label>
                         <textarea class="remarks-input w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 transition-all" 
                                   rows="1" placeholder=""></textarea>
                     </div>
@@ -755,18 +742,15 @@ function updateSummary() {
 
     let html = '';
     if (failList.length === 0 && pendingCount === 0) {
-        // iOS Fix: นำ คลาส relative z-10 ออก
         html = `<div class="bg-green-50 border border-green-300 text-green-700 px-4 py-4 rounded-lg flex items-center shadow-sm"><i class="fa-solid fa-circle-check text-3xl mr-4"></i><div><p class="font-bold text-lg">ผ่านเกณฑ์ทั้งหมด (All Passed)</p><p class="text-sm mt-1">การตรวจสอบสมบูรณ์แบบ ไม่มีข้อบกพร่อง</p></div></div>`;
     } else {
         if (failList.length > 0) {
-            // iOS Fix: นำ คลาส relative z-10 ออก
             html += `<div class="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center shadow-sm"><i class="fa-solid fa-circle-xmark text-2xl mr-3"></i><p class="font-bold text-lg">พบรายการ ไม่ผ่าน จำนวน ${failList.length} ข้อ</p></div><div class="space-y-3">`;
             failList.forEach(fail => {
                 html += `<div class="bg-white border border-red-200 p-4 rounded-lg shadow-sm"><p class="font-bold text-red-600"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ข้อ ${fail.title}</p><div class="text-sm text-gray-700 mt-2 bg-gray-50 p-3 rounded border border-gray-100"><span class="font-semibold">หมายเหตุ:</span> ${fail.remark}</div></div>`;
             });
             html += `</div>`;
         } else {
-             // iOS Fix: นำ คลาส relative z-10 ออก
              html += `<div class="bg-blue-50 border border-blue-300 text-blue-700 px-4 py-3 rounded-lg mb-3 flex items-center shadow-sm"><i class="fa-solid fa-info-circle text-2xl mr-3"></i><p class="font-bold text-lg">ผ่านเกณฑ์แล้ว ${passCount} ข้อ (ยังไม่พบข้อบกพร่อง)</p></div>`;
         }
         if (pendingCount > 0) html += `<p class="text-sm text-orange-600 mt-4 font-medium"><i class="fa-solid fa-clock mr-1"></i> * ยังมีรายการที่รอการตรวจสอบอีก ${pendingCount} ข้อ</p>`;
