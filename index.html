@@ -175,7 +175,8 @@
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                     <h2 class="text-xl font-bold mb-4 mea-text border-b pb-3">
                         <i class="fa-solid fa-clipboard-check mr-2"></i>
-                        สรุปการตรวจสอบ (Summary Report)
+                        สรุปการตรวจสอบ (Summary Report) 
+                        <span class="text-gray-700 text-lg font-medium ml-2">โดย <span class="displayInspectorName mea-text"></span></span>
                     </h2>
                     
                     <div class="flex flex-col md:flex-row justify-between md:items-center gap-2 mb-4 bg-orange-50 p-3 rounded-lg border border-orange-200">
@@ -193,16 +194,7 @@
                         <p class="text-gray-500 text-center">กรุณาทำรายการตรวจสอบเพื่อดูสรุปผล</p>
                     </div>
                     
-                    <div class="mt-8 pt-6 border-t border-gray-300 print-only">
-                        <div class="flex justify-end items-end">
-                            <div class="text-center w-64">
-                                <p class="text-gray-600 mb-6 text-xs font-bold">ลงชื่อผู้ตรวจสอบ (Inspector Signature)</p>
-                                <div class="border-b border-gray-400 pb-1 mb-2"></div>
-                                <p class="text-xs text-gray-700 font-bold">( <span class="displayInspectorName text-mea-orange px-2"></span> )</p>
-                            </div>
-                        </div>
                     </div>
-                </div>
             </td>
         </tr>
     </tbody>
@@ -501,7 +493,8 @@ document.addEventListener("change",(e)=>{
 });
 
 document.getElementById("inspectorName").addEventListener("input", function(e) {
-    const val = e.target.value.trim() || ".........................................";
+    // ให้ชื่อผู้ตรวจสอบโชว์เป็น "ยังไม่ระบุชื่อ" ถ้าไม่ได้กรอกข้อมูล แทนการใช้จุดไข่ปลา
+    const val = e.target.value.trim() || "(ยังไม่ระบุชื่อ)";
     document.querySelectorAll(".displayInspectorName").forEach(el => el.innerText = val);
 });
 
@@ -676,14 +669,11 @@ async function exportToExcelJS() {
             }
         }
 
-        sheet.addRow([]);
-        sheet.addRow([]);
-        const sigRow1 = sheet.addRow(['', '', '', 'ลงชื่อผู้ตรวจสอบ ..............................................................']);
-        const sigRow2 = sheet.addRow(['', '', '', `( ${inspector} )`]);
-        sheet.mergeCells(`D${sigRow1.number}:E${sigRow1.number}`);
-        sheet.mergeCells(`D${sigRow2.number}:E${sigRow2.number}`);
-        sigRow1.getCell(4).alignment = { horizontal: 'right' };
-        sigRow2.getCell(4).alignment = { horizontal: 'center' };
+        // ลบช่องลายเซ็นใน Excel ออก
+        const sigRow = sheet.addRow(['', '', '', `สรุปโดย Inspector: ${inspector}`]);
+        sheet.mergeCells(`D${sigRow.number}:E${sigRow.number}`);
+        sigRow.getCell(4).alignment = { horizontal: 'right' };
+        sigRow.getCell(4).font = { italic: true };
 
         const buffer = await workbook.xlsx.writeBuffer();
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -758,7 +748,7 @@ function updateSummary() {
 
         const photoInputId = `photo_${itemDom.getAttribute('data-radioname')}`;
         const photoPreview = itemDom.querySelector(`#${photoInputId}`).closest('.photo-upload-container').querySelector('.preview-img').src;
-        const photoHtml = (photoPreview && photoPreview.startsWith('data:image')) ? `<div class="mt-3"><span class="text-xs font-bold text-gray-500 mb-1 block">ภาพประกอบ:</span><img src="${photoPreview}" class="h-20 rounded border border-gray-300"></div>` : '';
+        const photoHtml = (photoPreview && photoPreview.startsWith('data:image')) ? `<div class="mt-2"><span class="text-xs font-bold text-gray-500 mb-1 block">ภาพประกอบ:</span><img src="${photoPreview}" class="h-24 w-auto max-w-full rounded border border-gray-300 object-contain bg-white"></div>` : '';
 
         if (!checkedRadio) pendingCount++;
         else if (checkedRadio.value === 'Pass') passCount++;
@@ -779,7 +769,7 @@ function updateSummary() {
         if (failList.length > 0) {
             html += `<div class="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center shadow-sm"><i class="fa-solid fa-circle-xmark text-2xl mr-3"></i><p class="font-bold text-lg">พบรายการ ไม่ผ่าน จำนวน ${failList.length} ข้อ</p></div><div class="space-y-3">`;
             failList.forEach(fail => {
-                html += `<div class="bg-white border border-red-200 p-4 rounded-lg shadow-sm"><p class="font-bold text-red-600"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ข้อ ${fail.title}</p><div class="text-sm text-gray-700 mt-2 bg-gray-50 p-3 rounded border border-gray-100"><span class="font-semibold">หมายเหตุ:</span> ${fail.remark} ${fail.photoHtml}</div></div>`;
+                html += `<div class="bg-white border border-red-200 p-3 rounded-lg shadow-sm"><p class="font-bold text-red-600 text-sm"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ข้อ ${fail.title}</p><div class="text-sm text-gray-700 mt-2 bg-gray-50 p-3 rounded border border-gray-100"><span class="font-semibold text-sm">หมายเหตุ:</span> ${fail.remark} ${fail.photoHtml}</div></div>`;
             });
             html += `</div>`;
         } else {
@@ -846,7 +836,7 @@ window.addEventListener("load",()=>{
     if(document.getElementById("inspectorName")) {
         const inspector = data.inspector || "";
         document.getElementById("inspectorName").value = inspector;
-        document.querySelectorAll(".displayInspectorName").forEach(el => el.innerText = inspector || ".........................................");
+        document.querySelectorAll(".displayInspectorName").forEach(el => el.innerText = inspector || "(ยังไม่ระบุชื่อ)");
     }
 
     document.querySelectorAll(".remarks-input").forEach((input, index)=>{
