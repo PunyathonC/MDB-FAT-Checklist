@@ -211,7 +211,7 @@
                         สรุปการตรวจสอบ (Summary Report)
                     </h2>
                     
-                    <div class="flex flex-col md:flex-row justify-between md:items-center gap-2 mb-4 bg-orange-50/50 p-3 rounded-lg border border-orange-100 screen-layout">
+                    <div class="flex flex-col md:flex-row justify-between md:items-center gap-2 mb-4 bg-orange-50 p-3 rounded-lg border border-orange-200">
                         <div class="text-sm">
                             <span class="font-semibold text-gray-600">Project / MDB No:</span> 
                             <span class="displaySummaryProject text-mea-orange font-bold text-base ml-1">-</span>
@@ -683,19 +683,17 @@ function printChecklist(){
         textarea.style.height = "auto";
         textarea.style.height = textarea.scrollHeight + "px";
         
-        // ถ้าช่องหมายเหตุว่างเปล่า ให้ใส่ค่าเว้นวรรคให้ตอน Print จะได้ไม่บีบแคบจนเกินไป
         if(textarea.value.trim() === "") {
             textarea.value = " ";
         }
     });
     
-    updatePrintRadios(); // แน่ใจว่าเรนเดอร์สีปุ่มถูกต้อง
+    updatePrintRadios(); 
     updateCurrentTime(); 
     
     setTimeout(() => {
         window.print();
         
-        // เคลียร์ค่าเว้นวรรคกลับมาว่างเหมือนเดิม
         document.querySelectorAll(".remarks-input").forEach(textarea=>{
             if(textarea.value === " ") {
                 textarea.value = "";
@@ -818,7 +816,7 @@ window.addEventListener("load",()=>{
         }
     });
     updateSummary();
-    updatePrintRadios(); // อัปเดตสไตล์สำหรับ Print ตั้งแต่เริ่ม
+    updatePrintRadios(); 
 });
 </script>
 
