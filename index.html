@@ -23,14 +23,27 @@
         .pass-selected{ background:#dcfce7 !important; border-color:#22c55e !important; color:#15803d !important; font-weight:600; }
         .fail-selected{ background:#fee2e2 !important; border-color:#ef4444 !important; color:#b91c1c !important; font-weight:600; }
         
+        /* ปรับปรุง CSS ของปุ่มลอยสำหรับมือถือโดยเฉพาะ */
         .floating-buttons {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 12px;
+            right: 12px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            align-items: flex-end;
+            gap: 6px; /* ลดช่องว่างระหว่างปุ่ม */
             z-index: 99999;
+            opacity: 0.95; /* ทำให้ปุ่มโปร่งใสเล็กน้อยบนมือถือ */
+        }
+        
+        /* สไตล์สำหรับ Tablet และ PC */
+        @media (min-width: 768px) {
+            .floating-buttons {
+                bottom: 24px;
+                right: 24px;
+                gap: 12px;
+                opacity: 1; /* กลับมาทึบ 100% บนจอใหญ่ */
+            }
         }
 
         /* ซ่อน Print Layout ในหน้าจอปกติ */
@@ -100,7 +113,7 @@
             .print-radio-box.print-fail { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #b91c1c !important; font-weight: bold; }
             .print-radio-box.inactive { opacity: 0.5; }
             
-            .print-photo-box img { max-height: 150px !important; margin-top: 4px !important; }
+            .print-photo-box img { max-height: 250px !important; width: auto !important; max-width: 100% !important; margin-top: 8px !important; object-fit: contain; }
         }
     </style>
 </head>
@@ -162,7 +175,8 @@
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
                     <h2 class="text-xl font-bold mb-4 mea-text border-b pb-3">
                         <i class="fa-solid fa-clipboard-check mr-2"></i>
-                        สรุปการตรวจสอบ (Summary Report)
+                        สรุปการตรวจสอบ (Summary Report) 
+                        <span class="text-gray-700 text-lg font-medium ml-2">โดย <span class="displayInspectorName mea-text"></span></span>
                     </h2>
                     
                     <div class="flex flex-col md:flex-row justify-between md:items-center gap-2 mb-4 bg-orange-50 p-3 rounded-lg border border-orange-200">
@@ -180,30 +194,21 @@
                         <p class="text-gray-500 text-center">กรุณาทำรายการตรวจสอบเพื่อดูสรุปผล</p>
                     </div>
                     
-                    <div class="mt-8 pt-6 border-t border-gray-300 print-only">
-                        <div class="flex justify-end items-end">
-                            <div class="text-center w-64">
-                                <p class="text-gray-600 mb-6 text-xs font-bold">ลงชื่อผู้ตรวจสอบ (Inspector Signature)</p>
-                                <div class="border-b border-gray-400 pb-1 mb-2"></div>
-                                <p class="text-xs text-gray-700 font-bold">( <span class="displayInspectorName text-mea-orange px-2"></span> )</p>
-                            </div>
-                        </div>
                     </div>
-                </div>
             </td>
         </tr>
     </tbody>
 </table>
 
 <div class="floating-buttons">
-    <button onclick="exportToExcelJS()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-4 rounded-full shadow-lg font-bold flex items-center transition-all text-lg" id="exportBtn">
-        <i class="fa-solid fa-file-excel mr-2 text-2xl"></i> ดาวน์โหลด Excel
+    <button onclick="exportToExcelJS()" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 md:px-6 md:py-4 rounded-full shadow-lg font-bold flex items-center transition-all text-xs md:text-lg" id="exportBtn">
+        <i class="fa-solid fa-file-excel mr-1.5 md:mr-3 text-sm md:text-2xl"></i> <span class="hidden md:inline">ดาวน์โหลด</span> Excel
     </button>
-    <button onclick="printChecklist()" class="mea-bg hover:opacity-90 text-white px-6 py-3 rounded-full shadow-lg font-semibold flex items-center transition-all">
-        <i class="fa-solid fa-print mr-2 text-xl"></i> พิมพ์ / PDF (Browser)
+    <button onclick="printChecklist()" class="mea-bg hover:opacity-90 text-white px-3 py-1.5 md:px-6 md:py-3 rounded-full shadow-lg font-semibold flex items-center transition-all text-xs md:text-base">
+        <i class="fa-solid fa-print mr-1.5 text-sm md:text-xl"></i> พิมพ์ / PDF
     </button>
-    <button onclick="clearChecklist()" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-full shadow-lg font-semibold flex items-center transition-all">
-        <i class="fa-solid fa-trash mr-2"></i> ล้างข้อมูล
+    <button onclick="clearChecklist()" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 md:px-6 md:py-3 rounded-full shadow-lg font-semibold flex items-center transition-all text-xs md:text-base">
+        <i class="fa-solid fa-trash mr-1.5 text-sm"></i> ล้างข้อมูล
     </button>
 </div>
 
@@ -350,7 +355,6 @@ sections.forEach((section, sIndex)=>{
                         <textarea class="remarks-input w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 transition-all" 
                                   rows="1" placeholder=""></textarea>
                         
-                        <!-- ระบบอัปโหลดรูปภาพ -->
                         <div class="photo-upload-container screen-layout mt-2">
                             <input type="file" accept="image/*" capture="environment" class="hidden photo-input" id="photo_${radioName}">
                             <button type="button" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 py-1.5 px-3 rounded flex items-center gap-2 border border-gray-300 transition-colors" onclick="document.getElementById('photo_${radioName}').click()">
@@ -366,7 +370,6 @@ sections.forEach((section, sIndex)=>{
 
                     </div>
 
-                    <!-- แสดงภาพในหน้า Print -->
                     <div class="print-layout mt-2 hidden print-photo-box">
                         <span class="text-[10px] font-bold text-gray-500 block mb-1">ภาพประกอบ:</span>
                         <img src="" class="print-img rounded border border-gray-300">
@@ -395,7 +398,7 @@ document.addEventListener("change", async (e) => {
                 const canvas = document.createElement("canvas");
                 const MAX_WIDTH = 600; // กำหนดความกว้างสูงสุด 600px
                 let scale = MAX_WIDTH / img.width;
-                if(scale > 1) scale = 1; // ไม่ขยายภาพถ้าเล็กกว่า 600px อยู่แล้ว
+                if(scale > 1) scale = 1; 
                 
                 canvas.width = img.width * scale;
                 canvas.height = img.height * scale;
@@ -490,7 +493,8 @@ document.addEventListener("change",(e)=>{
 });
 
 document.getElementById("inspectorName").addEventListener("input", function(e) {
-    const val = e.target.value.trim() || ".........................................";
+    // ให้ชื่อผู้ตรวจสอบโชว์เป็น "ยังไม่ระบุชื่อ" ถ้าไม่ได้กรอกข้อมูล แทนการใช้จุดไข่ปลา
+    const val = e.target.value.trim() || "(ยังไม่ระบุชื่อ)";
     document.querySelectorAll(".displayInspectorName").forEach(el => el.innerText = val);
 });
 
@@ -507,7 +511,6 @@ function updateCurrentTime() {
     document.querySelectorAll(".displayTimestamp").forEach(el => el.innerText = timeStr);
 }
 
-// อัปเดต ExcelJS เล็กน้อย (Excel ทำรูปซับซ้อน จึงยังส่งออกแค่ Text ให้ทำงานได้ปกติ)
 async function exportToExcelJS() {
     if (typeof ExcelJS === 'undefined') {
         alert("กำลังโหลดระบบ Excel กรุณารอสักครู่แล้วลองกดใหม่อีกครั้ง");
@@ -594,7 +597,6 @@ async function exportToExcelJS() {
                 let resultText = "-";
                 let resultColor = 'FF000000';
                 
-                // เช็คว่ามีรูปถ่ายไหมเพื่อใส่ไปใน Remark ของ Excel
                 const photoInput = document.getElementById(`photo_${radioName}`);
                 const hasPhoto = photoInput && photoInput.closest('.photo-upload-container').querySelector('.preview-img').src.startsWith('data:image');
                 let remarkText = remarkInputs[inputIndex].value.trim() || "";
@@ -667,14 +669,11 @@ async function exportToExcelJS() {
             }
         }
 
-        sheet.addRow([]);
-        sheet.addRow([]);
-        const sigRow1 = sheet.addRow(['', '', '', 'ลงชื่อผู้ตรวจสอบ ..............................................................']);
-        const sigRow2 = sheet.addRow(['', '', '', `( ${inspector} )`]);
-        sheet.mergeCells(`D${sigRow1.number}:E${sigRow1.number}`);
-        sheet.mergeCells(`D${sigRow2.number}:E${sigRow2.number}`);
-        sigRow1.getCell(4).alignment = { horizontal: 'right' };
-        sigRow2.getCell(4).alignment = { horizontal: 'center' };
+        // ลบช่องลายเซ็นใน Excel ออก
+        const sigRow = sheet.addRow(['', '', '', `สรุปโดย Inspector: ${inspector}`]);
+        sheet.mergeCells(`D${sigRow.number}:E${sigRow.number}`);
+        sigRow.getCell(4).alignment = { horizontal: 'right' };
+        sigRow.getCell(4).font = { italic: true };
 
         const buffer = await workbook.xlsx.writeBuffer();
         const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -747,10 +746,9 @@ function updateSummary() {
         const remarkRaw = itemDom.querySelector('.remarks-input').value.trim();
         const remarkSafe = remarkRaw ? escapeHTML(remarkRaw) : '<span class="text-gray-400 italic">ไม่ได้ระบุหมายเหตุ</span>';
 
-        // ดึงรูปภาพมาแสดงในหน้าสรุปผล
         const photoInputId = `photo_${itemDom.getAttribute('data-radioname')}`;
         const photoPreview = itemDom.querySelector(`#${photoInputId}`).closest('.photo-upload-container').querySelector('.preview-img').src;
-        const photoHtml = (photoPreview && photoPreview.startsWith('data:image')) ? `<div class="mt-3"><span class="text-xs font-bold text-gray-500 mb-1 block">ภาพประกอบ:</span><img src="${photoPreview}" class="h-20 rounded border border-gray-300"></div>` : '';
+        const photoHtml = (photoPreview && photoPreview.startsWith('data:image')) ? `<div class="mt-2"><span class="text-xs font-bold text-gray-500 mb-1 block">ภาพประกอบ:</span><img src="${photoPreview}" class="h-24 w-auto max-w-full rounded border border-gray-300 object-contain bg-white"></div>` : '';
 
         if (!checkedRadio) pendingCount++;
         else if (checkedRadio.value === 'Pass') passCount++;
@@ -771,7 +769,7 @@ function updateSummary() {
         if (failList.length > 0) {
             html += `<div class="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center shadow-sm"><i class="fa-solid fa-circle-xmark text-2xl mr-3"></i><p class="font-bold text-lg">พบรายการ ไม่ผ่าน จำนวน ${failList.length} ข้อ</p></div><div class="space-y-3">`;
             failList.forEach(fail => {
-                html += `<div class="bg-white border border-red-200 p-4 rounded-lg shadow-sm"><p class="font-bold text-red-600"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ข้อ ${fail.title}</p><div class="text-sm text-gray-700 mt-2 bg-gray-50 p-3 rounded border border-gray-100"><span class="font-semibold">หมายเหตุ:</span> ${fail.remark} ${fail.photoHtml}</div></div>`;
+                html += `<div class="bg-white border border-red-200 p-3 rounded-lg shadow-sm"><p class="font-bold text-red-600 text-sm"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ข้อ ${fail.title}</p><div class="text-sm text-gray-700 mt-2 bg-gray-50 p-3 rounded border border-gray-100"><span class="font-semibold text-sm">หมายเหตุ:</span> ${fail.remark} ${fail.photoHtml}</div></div>`;
             });
             html += `</div>`;
         } else {
@@ -838,7 +836,7 @@ window.addEventListener("load",()=>{
     if(document.getElementById("inspectorName")) {
         const inspector = data.inspector || "";
         document.getElementById("inspectorName").value = inspector;
-        document.querySelectorAll(".displayInspectorName").forEach(el => el.innerText = inspector || ".........................................");
+        document.querySelectorAll(".displayInspectorName").forEach(el => el.innerText = inspector || "(ยังไม่ระบุชื่อ)");
     }
 
     document.querySelectorAll(".remarks-input").forEach((input, index)=>{
