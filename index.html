@@ -359,6 +359,7 @@ sections.forEach((section, sIndex)=>{
                         <textarea class="remarks-input w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 transition-all" 
                                   rows="1" placeholder=""></textarea>
                         
+                        <!-- ระบบอัปโหลดรูปภาพ -->
                         <div class="photo-upload-container screen-layout mt-2">
                             <input type="file" accept="image/*" capture="environment" class="hidden photo-input" id="photo_${radioName}">
                             <button type="button" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 py-1.5 px-3 rounded flex items-center gap-2 border border-gray-300 transition-colors" onclick="document.getElementById('photo_${radioName}').click()">
@@ -374,6 +375,7 @@ sections.forEach((section, sIndex)=>{
 
                     </div>
 
+                    <!-- แสดงภาพในหน้า Print -->
                     <div class="print-layout mt-3 hidden print-photo-box">
                         <span class="text-[11px] font-bold text-gray-600 block mb-1">ภาพประกอบ:</span>
                         <img src="" class="print-img rounded border border-gray-300">
@@ -752,10 +754,10 @@ function updateSummary() {
         const remarkRaw = itemDom.querySelector('.remarks-input').value.trim();
         const remarkSafe = remarkRaw ? escapeHTML(remarkRaw) : '<span class="text-gray-400 italic">ไม่ได้ระบุหมายเหตุ</span>';
 
-        // ปรับให้รูปในหน้าสรุปผลใหญ่ขึ้น คงสัดส่วนเดิม
+        // ลดขนาดรูปภาพลง และกระชับพื้นที่ (h-24 สูงประมาณ 96px)
         const photoInputId = `photo_${itemDom.getAttribute('data-radioname')}`;
         const photoPreview = itemDom.querySelector(`#${photoInputId}`).closest('.photo-upload-container').querySelector('.preview-img').src;
-        const photoHtml = (photoPreview && photoPreview.startsWith('data:image')) ? `<div class="mt-4"><span class="text-sm font-bold text-gray-600 mb-2 block">ภาพประกอบ:</span><img src="${photoPreview}" class="max-h-40 w-auto max-w-full rounded border border-gray-300 object-contain bg-white"></div>` : '';
+        const photoHtml = (photoPreview && photoPreview.startsWith('data:image')) ? `<div class="mt-2"><span class="text-xs font-bold text-gray-500 mb-1 block">ภาพประกอบ:</span><img src="${photoPreview}" class="h-24 w-auto max-w-full rounded border border-gray-300 object-contain bg-white"></div>` : '';
 
         if (!checkedRadio) pendingCount++;
         else if (checkedRadio.value === 'Pass') passCount++;
@@ -776,7 +778,8 @@ function updateSummary() {
         if (failList.length > 0) {
             html += `<div class="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center shadow-sm"><i class="fa-solid fa-circle-xmark text-2xl mr-3"></i><p class="font-bold text-lg">พบรายการ ไม่ผ่าน จำนวน ${failList.length} ข้อ</p></div><div class="space-y-3">`;
             failList.forEach(fail => {
-                html += `<div class="bg-white border border-red-200 p-4 rounded-lg shadow-sm"><p class="font-bold text-red-600"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ข้อ ${fail.title}</p><div class="text-sm text-gray-700 mt-2 bg-gray-50 p-4 rounded border border-gray-100"><span class="font-semibold text-base">หมายเหตุ:</span> ${fail.remark} ${fail.photoHtml}</div></div>`;
+                // ปรับขอบและ padding ให้บางลง เพื่อประหยัดพื้นที่แนวตั้ง
+                html += `<div class="bg-white border border-red-200 p-3 rounded-lg shadow-sm"><p class="font-bold text-red-600 text-sm"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ข้อ ${fail.title}</p><div class="text-sm text-gray-700 mt-2 bg-gray-50 p-3 rounded border border-gray-100"><span class="font-semibold text-sm">หมายเหตุ:</span> ${fail.remark} ${fail.photoHtml}</div></div>`;
             });
             html += `</div>`;
         } else {
