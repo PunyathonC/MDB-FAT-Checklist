@@ -67,7 +67,6 @@
             .print-header { display: table-header-group !important; }
             .print-footer { display: table-footer-group !important; }
             
-            /* แก้ไขระบบตัดหน้ากระดาษที่เสถียรที่สุดสำหรับทุกบราวเซอร์และ iOS */
             .check-item { page-break-inside: avoid !important; break-inside: avoid !important; }
             .print-page-break { page-break-before: always !important; break-before: page !important; }
             
@@ -77,6 +76,11 @@
                 display: block !important;
                 height: 1px !important;
                 width: 100% !important;
+            }
+            
+            .avoid-break {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
             }
             
             td { padding-left: 0 !important; padding-right: 0 !important; }
@@ -467,13 +471,18 @@ document.addEventListener("click", (e) => {
 });
 
 function updatePrintRadios() {
-    const checkItems = document.querySelectorAll('.check-item');
+    // แก้ไขบั๊กการตรวจสอบ class ให้เช็คเฉพาะ element ที่มี data-radioname จริงๆ
+    const checkItems = document.querySelectorAll('.check-item[data-radioname]');
     checkItems.forEach(item => {
         const radioName = item.getAttribute('data-radioname');
+        if(!radioName) return;
+        
         const checkedRadio = document.querySelector(`input[name="${radioName}"]:checked`);
         const passBox = document.querySelector(`#print_status_${radioName} .print-pass-box`);
         const failBox = document.querySelector(`#print_status_${radioName} .print-fail-box`);
         
+        if(!passBox || !failBox) return;
+
         passBox.classList.remove('print-pass', 'inactive');
         failBox.classList.remove('print-fail', 'inactive');
         
@@ -784,8 +793,8 @@ function updateSummary() {
         if (failList.length > 0) {
             html += `<div class="bg-red-50 border border-red-300 text-red-700 px-4 py-3 rounded-lg mb-4 flex items-center shadow-sm"><i class="fa-solid fa-circle-xmark text-2xl mr-3"></i><p class="font-bold text-lg">พบรายการ ไม่ผ่าน จำนวน ${failList.length} ข้อ</p></div><div class="space-y-3">`;
             failList.forEach(fail => {
-                // คง avoid-break ไว้ข้างในรายข้อ เพื่อไม่ให้ Defect 1 ข้อถูกหั่นครึ่งหน้า
-                html += `<div class="bg-white border border-red-200 p-3 rounded-lg shadow-sm check-item"><p class="font-bold text-red-600 text-sm"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ข้อ ${fail.title}</p><div class="text-sm text-gray-700 mt-2 bg-gray-50 p-3 rounded border border-gray-100"><span class="font-semibold text-sm">หมายเหตุ:</span> ${fail.remark} ${fail.photoHtml}</div></div>`;
+                // แก้จาก check-item เป็น avoid-break เพื่อกันบราวเซอร์งง
+                html += `<div class="bg-white border border-red-200 p-3 rounded-lg shadow-sm avoid-break"><p class="font-bold text-red-600 text-sm"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ข้อ ${fail.title}</p><div class="text-sm text-gray-700 mt-2 bg-gray-50 p-3 rounded border border-gray-100"><span class="font-semibold text-sm">หมายเหตุ:</span> ${fail.remark} ${fail.photoHtml}</div></div>`;
             });
             html += `</div>`;
         } else {
