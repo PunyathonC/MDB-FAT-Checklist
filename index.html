@@ -91,16 +91,9 @@
                 break-after: avoid !important;
             }
             
-            .safe-page-break {
-                display: block !important;
+            .print-page-break {
                 page-break-before: always !important;
                 break-before: page !important;
-                -webkit-break-before: always !important;
-                width: 100% !important;
-                height: 1px !important;
-                border: none !important;
-                margin: 0 !important;
-                padding: 0 !important;
             }
             
             td { padding-left: 0 !important; padding-right: 0 !important; }
@@ -131,7 +124,7 @@
 
             .check-item { border: none !important; border-bottom: 1px solid #e5e7eb !important; border-radius: 0 !important; box-shadow: none !important; }
             
-            /* ปรับสมดุลความกว้างคอลัมน์ตอนปริ้นใหม่ */
+            /* ปรับสมดุลความกว้างคอลัมน์ตอนปริ้นใหม่ เพื่อไม่ให้ปุ่มโดนบีบจนคำขาดออกจากกัน */
             .grid { display: flex !important; width: 100%; justify-content: space-between; align-items: flex-start; flex-direction: row; }
             .md\:col-span-1 { width: 8%; flex-shrink: 0; font-weight: bold; }
             .md\:col-span-6 { width: 50%; flex-grow: 1; padding-right: 8px; font-weight: 500; }
@@ -158,7 +151,7 @@
                 gap: 5px; 
                 color: #6b7280; 
                 background-color: #f9fafb; 
-                white-space: nowrap !important;
+                white-space: nowrap !important; /* ล็อกคำไว้ไม่ให้หลุดบรรทัดแยกจากกันเด็ดขาด */
             }
             .print-radio-box i { font-size: 11px !important; }
             
@@ -187,7 +180,7 @@
         </tr>
     </thead>
     
-    <tbody id="topFormContainer">
+    <tbody>
         <tr>
             <td class="pb-2 pt-4 px-4 md:px-0">
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
@@ -225,7 +218,7 @@
 
     <tbody id="checklistBody"></tbody>
 
-    <tbody id="summaryContainerBody">
+    <tbody>
         <tr class="print-page-break">
             <td class="pt-4 pb-4 px-4 md:px-0">
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mt-4 md:mt-0">
@@ -265,17 +258,6 @@
             </td>
         </tr>
     </tbody>
-    
-    <tfoot class="print-footer">
-        <tr class="hidden"> 
-            <td class="pt-4 pb-4 px-4 md:px-0">
-                <div class="text-right text-[11px] font-bold text-gray-500 border-t border-gray-300 pt-2 mt-2">
-                    ผู้ตรวจสอบ: <span class="displayInspectorName text-gray-800"></span>
-                </div>
-            </td>
-        </tr>
-    </tfoot>
-
 </table>
 
 <div class="floating-buttons">
@@ -377,6 +359,7 @@ let fullHtml = "";
 sections.forEach((section, sIndex) => {
     const shouldPageBreak = sIndex > 0 && sIndex !== 2;
     
+    // 💥 ปรับการแบ่งหน้ากระดาษแบบใหม่ให้ถูกต้องตามโครงสร้างตารางเดี่ยว
     if (shouldPageBreak) {
         fullHtml += `<tr class="print-page-break"><td style="padding:0; border:none; height:0;"></td></tr>`;
     }
@@ -542,8 +525,11 @@ function updatePrintViews() {
         const failBox = document.querySelector(`#print_status_${radioName} .print-fail-box`);
         
         if(passBox && failBox) {
-            passBox.classList.remove('print-pass', 'inactive');
-            failBox.classList.remove('print-fail', 'inactive');
+            // 💥 iOS Fix: ปรับแก้การแยกฟังก์ชันสั่งลบคลาสแบบเดี่ยวเพื่อไม่ให้ตัวสั่งปริ้นกระตุกค้างบนหน้าจอ iPad
+            passBox.classList.remove('print-pass');
+            passBox.classList.remove('inactive');
+            failBox.classList.remove('print-fail');
+            failBox.classList.remove('inactive');
             
             if (checkedRadio) {
                 if (checkedRadio.value === 'Pass') {
@@ -817,17 +803,11 @@ function printChecklist(){
         }
     });
     
-    updatePrintRadios(); 
+    updatePrintViews(); 
     updateCurrentTime(); 
     
     setTimeout(() => {
         window.print();
-        
-        document.querySelectorAll(".remarks-input").forEach(textarea=>{
-            if(textarea.value === " ") {
-                textarea.value = "";
-            }
-        });
     }, 300);
 }
 
@@ -863,8 +843,17 @@ function updateSummary() {
             const itemDescSafe = escapeHTML(item[1].split('\n')[0]); 
 
             const photoInputId = `photo_${radioName}`;
-            const photoPreview = itemDom.querySelector(`#${photoInputId}`).closest('.photo-upload-container').querySelector('.preview-img').src;
-            const photoHtml = (photoPreview && photoPreview.startsWith('data:image')) ? `<div class="mt-2"><span class="text-[10px] font-bold text-gray-500 mb-1 block">ภาพประกอบ:</span><img src="${photoPreview}" class="h-20 w-auto max-w-full rounded border border-gray-300 object-contain bg-white"></div>` : '';
+            const photoInputEl = itemDom.querySelector(`#${photoInputId}`);
+            let photoHtml = '';
+            if (photoInputEl) {
+                const uploadContainer = photoInputEl.closest('.photo-upload-container');
+                if (uploadContainer) {
+                    const previewImg = uploadContainer.querySelector('.preview-img');
+                    if (previewImg && previewImg.src && previewImg.src.startsWith('data:image')) {
+                        photoHtml = `<div class="mt-2"><span class="text-[10px] font-bold text-gray-500 mb-1 block">ภาพประกอบ:</span><img src="${previewImg.src}" class="h-20 w-auto max-w-full rounded border border-gray-300 object-contain bg-white"></div>`;
+                    }
+                }
+            }
 
             if (!checkedRadio) {
                 pendingCount++;
@@ -992,7 +981,7 @@ window.addEventListener("load",()=>{
     });
 
     updateSummary();
-    updatePrintRadios(); 
+    updatePrintViews(); 
 });
 </script>
 
