@@ -170,6 +170,15 @@
             .print-header div { font-size: 12px !important; }
             .print-remarks-box span { font-size: 13px !important; }
             .print-photo-box span { font-size: 13px !important; }
+            /* เพิ่มตรงนี้ */
+            .print-copyright{
+                position: fixed;
+                right: 8mm;
+                bottom: 5mm;
+                font-size: 9px !important;
+                color: #9ca3af !important;
+                z-index: 9999;
+            }
         }
     </style>
 </head>
@@ -1023,7 +1032,11 @@ window.addEventListener("load",()=>{
     updatePrintRadios(); 
 });
 </script>
-
+    
+<div class="print-only print-copyright">
+    copyright 2026 แผนกระบบไฟฟ้า 2
+</div>
+    
 </body>
 </html>
 
