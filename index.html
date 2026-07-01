@@ -166,7 +166,14 @@
             .print-radio-box.print-fail { background-color: #fee2e2 !important; border-color: #ef4444 !important; color: #b91c1c !important; font-weight: bold; }
             .print-radio-box.inactive { opacity: 0.4; }
             
-            .print-photo-box img { max-height: 220px !important; width: auto !important; max-width: 100% !important; margin-top: 6px !important; object-fit: contain; }
+            /* ปรับแต่ง CSS สำหรับรองรับรูปภาพหลายรูปตอน Print */
+            .print-images-container img { 
+                max-height: 160px !important; 
+                width: auto !important; 
+                max-width: 100% !important; 
+                margin-top: 6px !important; 
+                object-fit: contain; 
+            }
             .print-header div { font-size: 12px !important; }
             .print-remarks-box span { font-size: 13px !important; }
             .print-photo-box span { font-size: 13px !important; }
@@ -179,10 +186,9 @@
     <thead class="print-header">
         <tr>
             <td class="pb-2 pt-4 px-4 md:px-0">
-                <!-- แก้ไขโครงสร้างส่วนหัวตรงนี้ เพิ่มลายน้ำไว้ตรงกลาง -->
                 <div class="flex justify-between items-center text-[10px] font-bold text-gray-500 border-b border-gray-300 pb-1">
                     <span class="w-1/3 text-left">วันที่ประเมิน: <span class="displayTimestamp text-gray-800"></span></span>
-                    <span class="print-only w-1/3 text-center text-[10px] font-normal text-gray-400 opacity-70 uppercase tracking-wide">copyright 2026 แผนกระบบไฟฟ้า 2</span>
+                    <span class="print-only w-1/3 text-center text-[10px] font-normal text-gray-400 opacity-70 uppercase tracking-wide">© 2026 Power System 2</span>
                     <span class="w-1/3 text-right">ผู้ตรวจสอบ: <span class="displayInspectorName text-gray-800"></span></span>
                 </div>
             </td>
@@ -207,7 +213,7 @@
                         <div class="grid md:grid-cols-3 gap-6">
                             <div>
                                 <label class="text-sm text-gray-500 font-medium">Reference Spec</label>
-                                <input type="text" id="referenceSpec" placeholder="ระบุ Reference Spec" class="w-full mt-1 border rounded-lg px-3 py-2 bg-gray-50 focus:outline-none focus:ring-1 focus:ring-orange-500">
+                                <input type="text" id="referenceSpec" value="BQD-3042" readonly class="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 bg-gray-200 text-gray-700 font-semibold cursor-not-allowed focus:outline-none">
                             </div>
                             <div>
                                 <label class="text-sm text-mea-orange font-bold">ผู้ตรวจสอบ (Inspector)</label>
@@ -233,10 +239,9 @@
     <thead class="print-header">
         <tr>
             <td class="pb-2 pt-2 px-4 md:px-0">
-                <!-- แก้ไขโครงสร้างส่วนหัวตรงนี้ เพิ่มลายน้ำไว้ตรงกลาง -->
                 <div class="flex justify-between items-center text-[10px] font-bold text-gray-500 border-b border-gray-300 pb-1">
                     <span class="w-1/3 text-left">วันที่ประเมิน: <span class="displayTimestamp text-gray-800"></span></span>
-                    <span class="print-only w-1/3 text-center text-[10px] font-normal text-gray-400 opacity-70 uppercase tracking-wide">copyright 2026 แผนกระบบไฟฟ้า 2</span>
+                    <span class="print-only w-1/3 text-center text-[10px] font-normal text-gray-400 opacity-70 uppercase tracking-wide">© 2026 Power System 2</span>
                     <span class="w-1/3 text-right">ผู้ตรวจสอบ: <span class="displayInspectorName text-gray-800"></span></span>
                 </div>
             </td>
@@ -287,19 +292,20 @@
 </div>
 
 <script>
+// --- อัปเดตข้อมูลรายละเอียด Check List ฉบับสมบูรณ์ ---
 const sections = [
     {
         title:"Section 1 : การตรวจสอบโครงสร้างและตู้ (Enclosure & Structure)",
         icon:"fa-building",
         critical:false,
         items:[
-            ["1.1","ขนาดตู้ (กว้างxยาวxสูง)","ตามแบบที่อนุมัติ"],
+            ["1.1","ขนาดตู้ (กว้าง × ยาว × สูง) ตามแบบที่อนุมัติ",""],
             ["1.2","โครงสร้างตู้ทำจากเหล็กหนาไม่น้อยกว่า 3 มม.","Spec ข้อ 9.1"],
-            ["1.3","ฝาตู้ทุกด้านเป็นชนิด Electrogalvanize และพ่นสี มีความหนา 2 มม.","Spec ข้อ 9.2"],
-            ["1.4","สีตู้ RAL 9002 หรืออื่นๆ และความหนาสี ≥ 60 ไมครอน","Spec ข้อ 9.3"],
-            ["1.5","Mimic bus (ตรวจสอบความถูกต้องของสีและขนาด)","Spec ข้อ 13"],
-            ["1.6","Nameplate (ชื่อตู้, ระบุ From/To, ระบุชื่อ CB ทุกตัว)","Spec ข้อ 13"],
-            ["1.7","ป้าย (MEA logo, QR code, Logo ผู้ผลิต)","Spec ข้อ 13"]
+            ["1.3","ฝาตู้ทุกด้านเป็นชนิด Electrogalvanize และพ่นสีมีความหนา 2 มม.","Spec ข้อ 9.2"],
+            ["1.4","สีตู้\n• สี RAL 9002 หรือสีอื่น\n• ความหนาสี ≥ 60 ไมครอน","Spec ข้อ 9.3"],
+            ["1.5","Mimic bus\n• Normal : สีดำ\n• Emergency : สีแดง\n• หนา ≥ 3 มม. / กว้าง ≥ 10 มม.","Spec ข้อ 13"],
+            ["1.6","Nameplate\n• ชื่อตู้ MDB\n• ระบุว่าจ่ายไฟมาจากที่ไหน หรือ จ่ายไฟไปที่ไหน \n• ระบุชื่อ CB Main และ Branch ทุกตัว","Spec ข้อ 13"],
+            ["1.7","ป้าย\n• MEA logo (ด้านหน้าตู้)\n• ป้ายที่มีรายละเอียด QR code (ด้านในตู้)\n• Logo ผู้ผลิต (ไม่กำหนด)","Spec ข้อ 13"]
         ]
     },
     {
@@ -307,10 +313,10 @@ const sections = [
         icon:"fa-network-wired",
         critical:false,
         items:[
-            ["2.1","ตรวจสอบขนาด Line และ Neutral Busbar","Spec ข้อ 10.3\nIEC 61439-1"],
-            ["2.2","ตรวจสอบขนาด Ground Busbar","Spec ข้อ 10"],
+            ["2.1","ขนาด Line และ Neutral Busbar\n• L1/L2/L3 ตามแบบ\n• N = L1/L2/L3","Spec ข้อ 10.3 IEC61439-1 \n(คำนวณตามบัสบาร์เปลือย)"],
+            ["2.2","ขนาด Ground Busbar\n• ≥ 95 ตร.มม. ถ้า Main CB ≤ 800 A\n• ≥ 120 ตร.มม. ถ้า Main CB > 800 A","Spec ข้อ 10"],
             ["2.3","สาย Bonding ระหว่าง Neutral Busbar และ Ground Busbar (ถ้ามี)","ตามแบบ"],
-            ["2.4","ตรวจสอบความถูกต้องของสี Busbar แต่ละเฟส","Spec ข้อ 10.7"]
+            ["2.4","สี Busbar\n• L1/L2/L3 : น้ำตาล / ดำ / เทา\n• N : ฟ้า\n• G : เขียว","Spec ข้อ 10.7"]
         ]
     },
     {
@@ -318,7 +324,7 @@ const sections = [
         icon:"fa-bolt",
         critical:false,
         items:[
-            ["3.1","ตรวจสอบ CB ตามแบบ (ยี่ห้อ, รุ่น, Rating CB (AT/AF), จำนวน Pole (1/3), Ics, Icu)","ตามแบบ"]
+            ["3.1","ตรวจสอบ CB ตามแบบ\n• ยี่ห้อ / รุ่น\n• Rating CB (AT/AF)\n• จำนวน Pole (1/3)\n• Ics, Icu (kA)","ตามแบบ"]
         ]
     },
     {
@@ -327,10 +333,10 @@ const sections = [
         critical:false,
         items:[
             ["4.1","สายควบคุมเป็นชนิด IEC 08 (HVSF)","Spec ข้อ 11.1"],
-            ["4.2","ขนาดสายควบคุม 2.5 ตร.มม.","Spec ข้อ 11.1"],
-            ["4.3","สาย Ground บานประตู (ใช้สายทองแดงถัก 10 ตร.มม.)","Spec ข้อ 11.1"],
-            ["4.4","Wire mark สายควบคุม (ชนิดปลอกสวม ระบุต้นทางและปลายทาง)","Spec ข้อ 11.5"],
-            ["4.5","ตรวจสอบความถูกต้องของสีสายไฟฟ้าแต่ละวงจร","Spec ข้อ 10.6"]
+            ["4.2","ขนาดสายควบคุม\n• Current / Voltage / Control circuit 2.5 ตร.มม.","Spec ข้อ 11.1"],
+            ["4.3","สาย Ground บานประตู\n• 10 ตร.มม.\n• ใช้สายทองแดงถัก (ไม่ใช่สาย IEC01)","Spec ข้อ 11.1"],
+            ["4.4","Wire mark สายควบคุม\n• เป็นชนิดปลอกสวม\n• ระบุชื่ออุปกรณ์ต้นทางและปลายทาง (2 บรรทัด) ที่ปลายสายทั้ง 2 ด้าน","Spec ข้อ 11.5"],
+            ["4.5","สีของสายไฟฟ้า\n• Voltage circuit : น้ำตาล / ดำ / เทา / ฟ้า\n• Current circuit : แดง / เหลือง / น้ำเงิน\n• Power supply circuit : น้ำตาล / ฟ้า\n• Control circuit : เทา","Spec ข้อ 10.6"]
         ]
     },
     {
@@ -338,9 +344,9 @@ const sections = [
         icon:"fa-gauge-high",
         critical:false,
         items:[
-            ["5.1","Current Transformer (ตรวจสอบ Ratio, Class, Burden)","ตามแบบ"],
-            ["5.2","Pilot lamp L1/L2/L3 ใช้สีขาว","Spec ข้อ 12.2"],
-            ["5.3","Fuse (ถ้ามี) จัดหาสำรอง 10% ของทั้งหมด","Spec ข้อ 12.3"]
+            ["5.1","Current Transformer\n• Ratio xxx/1 หรือ xxx/5\n• Class และ Burden","ตามแบบ"],
+            ["5.2","Pilot lamp\n• L1/L2/L3 : สีขาว","Spec ข้อ 12.2"],
+            ["5.3","Fuse (ถ้ามี)\n• จัดหา Fuse (spare) 10% ของทั้งหมด","Spec ข้อ 12.3"]
         ]
     },
     {
@@ -348,9 +354,9 @@ const sections = [
         icon:"fa-gears",
         critical:false,
         items:[
-            ["6.1","ทดสอบการทำงานของวงจรควบคุม (Alarm, status, trip, interlock, …)",""],
-            ["6.2","ทดสอบการทำงานของ Meter (V/I/Watt/Var/VA/p.f.)",""],
-            ["6.3","ทดสอบ Test trip ของ MCCB",""],
+            ["6.1","ทดสอบการทำงานของวงจรควบคุม\n• Alarm, status, trip, interlock, …",""],
+            ["6.2","ทดสอบการทำงานของ Meter\n• ตรวจสอบ V/I/Watt/Var/VA/p.f.",""],
+            ["6.3","ทดสอบ test trip ของ MCCB",""],
             ["6.4","ทดสอบ Trip unit ของ ACB",""]
         ]
     },
@@ -359,10 +365,10 @@ const sections = [
         icon:"fa-triangle-exclamation",
         critical:true,
         items:[
-            ["7.1","Dielectric test ด้วยแรงดัน 2000VAC เป็นเวลา 1 นาที (ไม่ Breakdown)","IEC 61439-1"],
-            ["7.2","Insulation Resistance Test ด้วยแรงดัน 1000VDC 1 นาที (≥ 1 MegaOhm)","IEC 61439-1"],
-            ["7.3","Ground Continuity Test (≤ 0.1 Ohm)","IEC 60335-1"],
-            ["7.4","ทดสอบ Contact resistance (ตาม datasheet)",""]
+            ["7.1","Dielectric test ของ Main circuit และ Control circuit\n• จ่ายแรงดัน 2000VAC เป็นเวลา 1 นาที\n• L1 เทียบกับ L2+L3+N+G\n• L2 เทียบกับ L1+L3+N+G\n• L3 เทียบกับ L1+L2+N+G\n• ค่าที่ยอมรับได้: ไม่ Breakdown","อ้างอิง : IEC 61439-1"],
+            ["7.2","Insulation Resistance Test\n• ก่อนและหลัง Dielectric test\n• จ่ายแรงดัน 1000VDC เป็นเวลา 1 นาที\n• L1 เทียบกับ L2+L3+N+G\n• L2 เทียบกับ L1+L3+N+G\n• L3 เทียบกับ L1+L2+N+G\n• ค่าที่ยอมรับได้ ≥ 1 MegaOhm","อ้างอิง : IEC 61439-1"],
+            ["7.3","Ground Continuity Test\n• ระหว่าง ground bar และ terminal\n• ระหว่างโครงและฝาตู้\n• ค่าที่ยอมรับได้ ≤ 0.1 Ohm","อ้างอิง : IEC 60335-1"],
+            ["7.4","ทดสอบ Contact resistance\n• Main CB\n• CB ทุกตัว ≥ 800 A\n• Main busbar (กรณีติดตู้)\n• ค่าที่ยอมรับได้: ตาม datasheet ของ CB",""]
         ]
     }
 ];
@@ -380,10 +386,9 @@ sections.forEach((section, sIndex) => {
         <thead class="print-header">
             <tr>
                 <td class="pb-2 pt-2 px-4 md:px-0">
-                    <!-- แก้ไขโครงสร้างส่วนหัวตรงนี้ เพิ่มลายน้ำไว้ตรงกลาง -->
                     <div class="flex justify-between items-center text-[10px] font-bold text-gray-500 border-b border-gray-300 pb-1">
                         <span class="w-1/3 text-left">วันที่ประเมิน: <span class="displayTimestamp text-gray-800"></span></span>
-                        <span class="print-only w-1/3 text-center text-[10px] font-normal text-gray-400 opacity-70 uppercase tracking-wide">copyright 2026 แผนกระบบไฟฟ้า 2</span>
+                        <span class="print-only w-1/3 text-center text-[10px] font-normal text-gray-400 opacity-70 uppercase tracking-wide">© 2026 Power System 2</span>
                         <span class="w-1/3 text-right">ผู้ตรวจสอบ: <span class="displayInspectorName text-gray-800"></span></span>
                     </div>
                 </td>
@@ -445,16 +450,12 @@ sections.forEach((section, sIndex) => {
                             <textarea class="remarks-input w-full border border-gray-200 rounded-lg px-3 py-1.5 md:py-2 text-xs md:text-sm bg-gray-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-400 transition-all" 
                                       rows="1" placeholder=""></textarea>
                             
-                            <div class="photo-upload-container mt-2">
-                                <input type="file" accept="image/*" class="hidden photo-input" id="photo_${radioName}">
+                            <div class="photo-upload-container mt-2" data-radioname="${radioName}">
+                                <input type="file" accept="image/*" multiple class="hidden photo-input" id="photo_${radioName}">
                                 <button type="button" class="text-[10px] md:text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 py-1.5 px-3 rounded flex items-center gap-2 border border-gray-300 transition-colors" onclick="document.getElementById('photo_${radioName}').click()">
-                                    <i class="fa-solid fa-image"></i> แนบรูปภาพ / ถ่ายรูป
+                                    <i class="fa-solid fa-images"></i> แนบรูปภาพ / ถ่ายรูป
                                 </button>
-                                <div class="mt-2 preview-box hidden relative inline-block">
-                                    <img src="" class="h-20 w-auto rounded border border-gray-300 object-cover preview-img">
-                                    <button type="button" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] hover:bg-red-600 remove-photo-btn" data-target="photo_${radioName}">
-                                        <i class="fa-solid fa-times"></i>
-                                    </button>
+                                <div class="mt-2 preview-container flex flex-wrap gap-2 empty:hidden">
                                 </div>
                             </div>
                         </div>
@@ -464,7 +465,8 @@ sections.forEach((section, sIndex) => {
                         </div>
                         <div class="print-layout mt-1 hidden print-photo-box">
                             <span class="text-[10px] font-bold text-gray-500 block mb-0.5">ภาพประกอบ:</span>
-                            <img src="" class="print-img rounded border border-gray-300">
+                            <div class="print-images-container flex flex-wrap gap-2">
+                            </div>
                         </div>
 
                     </div>
@@ -477,46 +479,64 @@ sections.forEach((section, sIndex) => {
 
 checklistContainer.innerHTML = fullHtml;
 
-// ระบบจัดการรูปภาพ (บีบอัดภาพเพื่อประหยัด LocalStorage)
+// ระบบจัดการอัปโหลดรูปภาพหลายรูป
 document.addEventListener("change", async (e) => {
     if (e.target.classList.contains("photo-input")) {
-        const file = e.target.files[0];
-        if (!file) return;
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
 
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (event) => {
-            const img = new Image();
-            img.src = event.target.result;
-            img.onload = () => {
-                const canvas = document.createElement("canvas");
-                const MAX_WIDTH = 600; 
-                let scale = MAX_WIDTH / img.width;
-                if(scale > 1) scale = 1; 
-                
-                canvas.width = img.width * scale;
-                canvas.height = img.height * scale;
-                
-                const ctx = canvas.getContext("2d");
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                
-                const compressedBase64 = canvas.toDataURL("image/jpeg", 0.6); 
-                
-                const container = e.target.closest('.photo-upload-container');
-                const previewBox = container.querySelector('.preview-box');
-                const previewImg = container.querySelector('.preview-img');
-                const printBox = container.closest('.check-item').querySelector('.print-photo-box');
-                const printImg = printBox.querySelector('.print-img');
-                
-                previewImg.src = compressedBase64;
-                previewBox.classList.remove('hidden');
-                
-                printImg.src = compressedBase64;
-                printBox.classList.remove('hidden');
-                
-                saveData(); 
+        const container = e.target.closest('.photo-upload-container');
+        const previewContainer = container.querySelector('.preview-container');
+        const printBox = container.closest('.check-item').querySelector('.print-photo-box');
+        const printImagesContainer = printBox.querySelector('.print-images-container');
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const reader = new FileReader();
+            
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    const MAX_WIDTH = 600; 
+                    let scale = MAX_WIDTH / img.width;
+                    if(scale > 1) scale = 1; 
+                    
+                    canvas.width = img.width * scale;
+                    canvas.height = img.height * scale;
+                    
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    const compressedBase64 = canvas.toDataURL("image/jpeg", 0.6); 
+                    const imgId = 'img_' + Math.random().toString(36).substr(2, 9);
+                    
+                    const previewWrapper = document.createElement('div');
+                    previewWrapper.className = 'relative inline-block photo-item';
+                    previewWrapper.dataset.imgid = imgId;
+                    previewWrapper.innerHTML = `
+                        <img src="${compressedBase64}" class="h-20 w-auto rounded border border-gray-300 object-cover preview-img">
+                        <button type="button" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] hover:bg-red-600 remove-photo-btn">
+                            <i class="fa-solid fa-times"></i>
+                        </button>
+                    `;
+                    previewContainer.appendChild(previewWrapper);
+                    
+                    const printImg = document.createElement('img');
+                    printImg.src = compressedBase64;
+                    printImg.className = 'print-img rounded border border-gray-300 object-contain';
+                    printImg.dataset.imgid = imgId;
+                    printImagesContainer.appendChild(printImg);
+                    
+                    printBox.classList.remove('hidden');
+                    saveData(); 
+                };
             };
-        };
+            reader.readAsDataURL(file);
+        }
+        
+        e.target.value = "";
     }
 });
 
@@ -524,18 +544,19 @@ document.addEventListener("change", async (e) => {
 document.addEventListener("click", (e) => {
     const btn = e.target.closest('.remove-photo-btn');
     if (btn) {
-        const targetId = btn.getAttribute('data-target');
-        const input = document.getElementById(targetId);
-        input.value = ""; 
+        const photoItem = btn.closest('.photo-item');
+        const imgId = photoItem.dataset.imgid;
+        const checkItem = btn.closest('.check-item');
         
-        const container = btn.closest('.photo-upload-container');
-        const previewBox = container.querySelector('.preview-box');
-        const previewImg = container.querySelector('.preview-img');
-        const printBox = container.closest('.check-item').querySelector('.print-photo-box');
+        photoItem.remove();
         
-        previewImg.src = "";
-        previewBox.classList.add('hidden');
-        printBox.classList.add('hidden');
+        const printImg = checkItem.querySelector(`.print-img[data-imgid="${imgId}"]`);
+        if (printImg) printImg.remove();
+        
+        const printImagesContainer = checkItem.querySelector('.print-images-container');
+        if (printImagesContainer && printImagesContainer.children.length === 0) {
+            checkItem.querySelector('.print-photo-box').classList.add('hidden');
+        }
         
         saveData();
     }
@@ -711,10 +732,11 @@ async function exportToExcelJS() {
                 let resultText = "-";
                 let resultColor = 'FF000000';
                 
-                const photoInput = document.getElementById(`photo_${radioName}`);
-                const hasPhoto = photoInput && photoInput.closest('.photo-upload-container').querySelector('.preview-img').src.startsWith('data:image');
+                const previewContainer = document.querySelector(`.photo-upload-container[data-radioname="${radioName}"] .preview-container`);
+                const imgsCount = previewContainer ? previewContainer.querySelectorAll('.preview-img').length : 0;
+                
                 let remarkText = remarkInputs[inputIndex].value.trim() || "";
-                if(hasPhoto) remarkText += (remarkText ? " [มีภาพถ่ายแนบในระบบ]" : "[มีภาพถ่ายแนบในระบบ]");
+                if(imgsCount > 0) remarkText += (remarkText ? ` [มีภาพถ่ายแนบ ${imgsCount} รูป]` : `[มีภาพถ่ายแนบ ${imgsCount} รูป]`);
                 
                 if (radioEl) {
                     if (radioEl.value === "Pass") {
@@ -730,7 +752,10 @@ async function exportToExcelJS() {
                     pendingCount++;
                 }
                 
-                const row = sheet.addRow([ item[0], item[1], item[2], resultText, remarkText ]);
+                // คลีน Bullet ออกให้ Excel อ่านง่ายขึ้น
+                let plainDescription = item[1].replace(/\n• /g, '\n- ').replace(/• /g, '- ');
+                
+                const row = sheet.addRow([ item[0], plainDescription, item[2], resultText, remarkText ]);
                 row.eachCell((cell, colNum) => {
                     cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
                     cell.alignment = { vertical: 'top', wrapText: true };
@@ -821,18 +846,23 @@ function printChecklist(){
     document.querySelectorAll(".remarks-input").forEach(textarea=>{
         textarea.style.height = "auto";
         textarea.style.height = textarea.scrollHeight + "px";
-        
-        if(textarea.value.trim() === "") {
-            textarea.value = " ";
+
+        if(textarea.value.trim()===""){
+            textarea.value=" ";
         }
     });
-    
-    updatePrintRadios(); 
-    updateCurrentTime(); 
-    
-    setTimeout(() => {
-        window.print();
-    }, 300);
+
+    updatePrintViews();
+    updateCurrentTime();
+
+    setTimeout(()=>{
+        try {
+            window.print();
+        } catch (e) {
+            console.error("Print failed:", e);
+            alert("ไม่สามารถสั่งพิมพ์ได้ กรุณาตรวจสอบเบราว์เซอร์ของคุณ");
+        }
+    },500);
 }
 
 function clearChecklist(){
@@ -840,36 +870,6 @@ function clearChecklist(){
         localStorage.removeItem("mdb_fat_checklist");
         location.reload();
     }
-}
-
-// ฟังก์ชันอัปเดตสไตล์ของปุ่มในหน้า Print ให้ตรงกับที่เลือก
-function updatePrintRadios() {
-    const checkItems = document.querySelectorAll('.check-item');
-    checkItems.forEach(item => {
-        const radioName = item.getAttribute('data-radioname');
-        if (!radioName) return;
-        const checkedRadio = document.querySelector(`input[name="${radioName}"]:checked`);
-        const passBox = document.querySelector(`#print_status_${radioName} .print-pass-box`);
-        const failBox = document.querySelector(`#print_status_${radioName} .print-fail-box`);
-        
-        if (passBox && failBox) {
-            passBox.classList.remove('print-pass', 'inactive');
-            failBox.classList.remove('print-fail', 'inactive');
-            
-            if (checkedRadio) {
-                if (checkedRadio.value === 'Pass') {
-                    passBox.classList.add('print-pass');
-                    failBox.classList.add('inactive');
-                } else {
-                    failBox.classList.add('print-fail');
-                    passBox.classList.add('inactive');
-                }
-            } else {
-                passBox.classList.add('inactive');
-                failBox.classList.add('inactive');
-            }
-        }
-    });
 }
 
 function escapeHTML(str) {
@@ -896,9 +896,14 @@ function updateSummary() {
             const itemNumberSafe = escapeHTML(item[0]);
             const itemDescSafe = escapeHTML(item[1].split('\n')[0]); 
 
-            const photoInputId = `photo_${radioName}`;
-            const photoPreview = itemDom.querySelector(`#${photoInputId}`).closest('.photo-upload-container').querySelector('.preview-img').src;
-            const photoHtml = (photoPreview && photoPreview.startsWith('data:image')) ? `<div class="mt-2"><span class="text-[10px] font-bold text-gray-500 mb-1 block">ภาพประกอบ:</span><img src="${photoPreview}" class="h-20 w-auto max-w-full rounded border border-gray-300 object-contain bg-white"></div>` : '';
+            const previewContainer = itemDom.querySelector('.preview-container');
+            const imgs = previewContainer ? previewContainer.querySelectorAll('.preview-img') : [];
+            let photoHtml = '';
+            
+            if (imgs.length > 0) {
+                let imgTags = Array.from(imgs).map(img => `<img src="${img.src}" class="h-16 w-auto max-w-full rounded border border-gray-300 object-contain bg-white">`).join('');
+                photoHtml = `<div class="mt-2"><span class="text-[10px] font-bold text-gray-500 mb-1 block">ภาพประกอบ (${imgs.length} รูป):</span><div class="flex flex-wrap gap-2">${imgTags}</div></div>`;
+            }
 
             if (!checkedRadio) {
                 pendingCount++;
@@ -941,21 +946,22 @@ function updateSummary() {
 
 function saveData(){
     const data = {
-        referenceSpec : document.getElementById("referenceSpec")?.value || "",
+        referenceSpec : document.getElementById("referenceSpec")?.value || "BQD-3042",
         projectNo : document.getElementById("projectNo")?.value || "",
         inspector : document.getElementById("inspectorName")?.value || "",
         remarks : [],
         radios : {},
-        photos : {}
+        photos : {} 
     };
 
     document.querySelectorAll(".remarks-input").forEach(input=>{ data.remarks.push(input.value); });
     document.querySelectorAll('input[type="radio"]:checked').forEach(radio=>{ data.radios[radio.name] = radio.value; });
     
-    document.querySelectorAll(".photo-input").forEach(input => {
-        const previewImg = input.closest('.photo-upload-container').querySelector('.preview-img');
-        if(previewImg.src && previewImg.src.startsWith('data:image')) {
-            data.photos[input.id] = previewImg.src;
+    document.querySelectorAll(".photo-upload-container").forEach(container => {
+        const radioName = container.dataset.radioname;
+        const imgs = container.querySelectorAll('.preview-img');
+        if(imgs.length > 0) {
+            data.photos[radioName] = Array.from(imgs).map(img => img.src);
         }
     });
 
@@ -975,11 +981,12 @@ document.addEventListener("change", saveData);
 window.addEventListener("load",()=>{
     updateCurrentTime();
     
+    if(document.getElementById("referenceSpec")) document.getElementById("referenceSpec").value = "BQD-3042";
+    
     const saved = localStorage.getItem("mdb_fat_checklist");
     if(!saved) return;
     const data = JSON.parse(saved);
     
-    if(document.getElementById("referenceSpec")) document.getElementById("referenceSpec").value = data.referenceSpec || "";
     if(document.getElementById("projectNo")) {
         const projNo = data.projectNo || "";
         document.getElementById("projectNo").value = projNo;
@@ -1007,21 +1014,38 @@ window.addEventListener("load",()=>{
         }
     });
 
-    Object.keys(data.photos || {}).forEach(id => {
-        const input = document.getElementById(id);
-        if(input) {
-            const container = input.closest('.photo-upload-container');
-            const previewBox = container.querySelector('.preview-box');
-            const previewImg = container.querySelector('.preview-img');
-            const printBox = container.closest('.check-item').querySelector('.print-photo-box');
-            const printImg = printBox.querySelector('.print-img');
+    Object.keys(data.photos || {}).forEach(radioName => {
+        const container = document.querySelector(`.photo-upload-container[data-radioname="${radioName}"]`);
+        if(container) {
+            const previewContainer = container.querySelector('.preview-container');
+            const checkItem = container.closest('.check-item');
+            const printBox = checkItem.querySelector('.print-photo-box');
+            const printImagesContainer = printBox.querySelector('.print-images-container');
             
-            const base64Str = data.photos[id];
-            previewImg.src = base64Str;
-            previewBox.classList.remove('hidden');
-            
-            printImg.src = base64Str;
-            printBox.classList.remove('hidden');
+            data.photos[radioName].forEach(base64Str => {
+                const imgId = 'img_' + Math.random().toString(36).substr(2, 9);
+                
+                const previewWrapper = document.createElement('div');
+                previewWrapper.className = 'relative inline-block photo-item';
+                previewWrapper.dataset.imgid = imgId;
+                previewWrapper.innerHTML = `
+                    <img src="${base64Str}" class="h-20 w-auto rounded border border-gray-300 object-cover preview-img">
+                    <button type="button" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] hover:bg-red-600 remove-photo-btn">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                `;
+                previewContainer.appendChild(previewWrapper);
+                
+                const printImg = document.createElement('img');
+                printImg.src = base64Str;
+                printImg.className = 'print-img rounded border border-gray-300 object-contain';
+                printImg.dataset.imgid = imgId;
+                printImagesContainer.appendChild(printImg);
+            });
+
+            if(data.photos[radioName].length > 0) {
+                printBox.classList.remove('hidden');
+            }
         }
     });
 
