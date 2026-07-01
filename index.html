@@ -170,16 +170,21 @@
             .print-header div { font-size: 12px !important; }
             .print-remarks-box span { font-size: 13px !important; }
             .print-photo-box span { font-size: 13px !important; }
-            /* เพิ่มตรงนี้ */
-            .print-copyright{
+            /* แทนที่ .print-copyright เดิมในส่วน @media print */
+            .print-copyright {
                 position: fixed;
                 right: 8mm;
                 bottom: 5mm;
-                font-size: 9px !important;
-                color: #9ca3af !important;
-                z-index: 9999;
+                font-size: 10px !important;
+                font-weight: 500 !important;
+                color: rgba(156, 163, 175, 0.8) !important; /* ใช้ rgba เพื่อให้ดูเป็นลายน้ำกลืนไปกับกระดาษ */
+                z-index: 99999;
+                pointer-events: none; /* ป้องกันการคลิกหรือรบกวนเนื้อหา */
+    
+             /* บังคับ WebKit (Safari/iOS/Android) ให้แสดงผลตำแหน่ง fixed ทุกหน้า */
+                -webkit-transform: translateZ(0); 
+                transform: translateZ(0);
             }
-        }
     </style>
 </head>
 <body class="min-h-screen pb-10">
